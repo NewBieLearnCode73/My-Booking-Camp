@@ -54,6 +54,10 @@ public class JwtUtils {
         return claims(token).getSubject();
     }
 
+    public Date extractExpiration(String token){
+        return claims(token).getExpiration();
+    }
+
     // Check if the token is valid (The token is not expired, the signature is valid, the token is not empty)
     public boolean isTokenValid(String token){
         try {

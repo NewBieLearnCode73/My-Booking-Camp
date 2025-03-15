@@ -5,6 +5,7 @@ import com.example.auth_service.handle.CustomRunTimeException;
 import com.example.auth_service.repository.UserRepository;
 import com.example.auth_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -25,6 +29,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomRunTimeException("Email already exists!");
         }
         else{
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
             return userRepository.save(user);
         }
     }
@@ -34,6 +40,16 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
             return Optional.of(user.get());
+        } else {
+            throw new CustomRunTimeException("User not found!");
+        }
+    }
+
+    @Override
+    public String getUserIdByUsername(String username) {
+        User user = userRepository.findUserByUsername(username);
+        if (user != null) {
+            return user.getId();
         } else {
             throw new CustomRunTimeException("User not found!");
         }

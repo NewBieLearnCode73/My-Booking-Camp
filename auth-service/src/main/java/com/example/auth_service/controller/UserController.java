@@ -29,7 +29,7 @@ public class UserController {
 
     // Register
     @PostMapping("/auth/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user){
+    public ResponseEntity<?> registerUser(@Valid @RequestBody User user){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUserToDatabase(user));
     }
 }

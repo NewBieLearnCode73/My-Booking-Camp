@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface UserService {
     public User saveUserToDatabase(User user);
     public Optional<User> findUserById(String id);
+    public String getUserIdByUsername(String username);
 }

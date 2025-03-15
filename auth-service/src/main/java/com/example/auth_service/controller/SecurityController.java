@@ -1,6 +1,8 @@
 package com.example.auth_service.controller;
 
 import com.example.auth_service.entity.LoginForm;
+import com.example.auth_service.service.MyJwtRedisService;
+import com.example.auth_service.service.UserService;
 import com.example.auth_service.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,13 @@ public class SecurityController {
     private UserDetailsService userDetailsService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private MyJwtRedisService myJwtRedisService;
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> authAndGetToken(@RequestBody LoginForm loginForm){
@@ -42,8 +50,17 @@ public class SecurityController {
             String accessToken = jwtUtils.generateToken(userDetails);
             String refreshToken = jwtUtils.generateRefreshToken(userDetails);
 
+            String user_id = userService.getUserIdByUsername(loginForm.username());
+
             token.put("access_token", accessToken);
             token.put("refresh_token", refreshToken);
+
+
+            long ttl = jwtUtils.extractExpiration(accessToken).getTime() - System.currentTimeMillis();
+
+            // Convert to milliseconds
+            myJwtRedisService.saveJwtToRedis(user_id, accessToken, ttl);
+
 
             return ResponseEntity.status(HttpStatus.OK.value()).body(token);
         }
