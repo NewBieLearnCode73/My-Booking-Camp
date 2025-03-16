@@ -1,6 +1,7 @@
 package com.example.auth_service.handle;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @ControllerAdvice
+@Slf4j
 public class GlobalHandleException {
 
     // Check All

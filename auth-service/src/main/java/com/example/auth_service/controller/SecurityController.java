@@ -42,7 +42,6 @@ public class SecurityController {
                 new UsernamePasswordAuthenticationToken(loginForm.username(), loginForm.password())
         );
 
-
         if(authentication.isAuthenticated()){
             Map<String, String> token = new HashMap<>();
 
