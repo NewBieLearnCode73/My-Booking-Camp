@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findUserById(String id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
-            return Optional.of(user.get());
+            return user;
         } else {
             throw new CustomRunTimeException("User not found!");
         }
