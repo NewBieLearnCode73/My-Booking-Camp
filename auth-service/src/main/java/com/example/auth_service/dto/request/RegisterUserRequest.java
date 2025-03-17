@@ -17,31 +17,31 @@ import java.time.LocalDate;
 @Builder
 public class RegisterUserRequest {
 
-    @NotEmpty(message = "Vui lòng nhập username")
-    @Size(min = 8, message = "Username cần ít nhất 8 kí tự trở lên")
+    @NotEmpty(message = "Please provide a username")
+    @Size(min = 8, message = "Username must be at least 8 characters long")
     private String username;
 
-    @NotEmpty(message = "Vui lòng nhập password")
-    @Size(min = 8, message = "Password cần ít nhất 8 kí tự trở lên")
+    @NotEmpty(message = "Please provide a password")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @NotEmpty(message = "Vui lòng nhập email")
-    @Email(message = "Email không hợp lệ")
+    @NotEmpty(message = "Please provide an email")
+    @Email(message = "Email not valid")
     private String email;
 
-    @NotEmpty(message = "Vui lòng nhập first name")
+    @NotEmpty(message = "Please provide a first name")
     private String firstName;
 
-    @NotEmpty(message = "Vui lòng nhập last name")
+    @NotEmpty(message = "Please provide a last name")
     private String lastName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dob;
 
-    @NotEmpty(message = "Vui lòng nhập city")
+    @NotEmpty(message = "Please provide a city")
     private String city;
 
-    @NotEmpty(message = "Vui lòng nhập phone")
-    @Size(min = 10, message = "Phone cần ít nhất 10 kí tự trở lên")
+    @NotEmpty(message = "Please provide a phone")
+    @Size(min = 10, message = "Phone number must be at least 10 characters long")
     private String phone;
 }

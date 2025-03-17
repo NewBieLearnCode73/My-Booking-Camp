@@ -1,4 +1,4 @@
-package com.example.profile_service.dto.request;
+package com.example.auth_service.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

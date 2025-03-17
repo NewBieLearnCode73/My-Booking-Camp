@@ -6,10 +6,12 @@ import com.example.profile_service.entity.Profile;
 import com.example.profile_service.mapper.ProfileMapper;
 import com.example.profile_service.repository.ProfileRepository;
 import com.example.profile_service.service.ProfileService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ProfileServiceImpl implements ProfileService {
     @Autowired
     private ProfileRepository profileRepository;

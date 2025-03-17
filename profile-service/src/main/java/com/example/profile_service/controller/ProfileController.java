@@ -12,22 +12,22 @@ public class ProfileController {
     private ProfileService profileService;
 
 
-    @PostMapping("/profile")
+    @PostMapping("/profile/users")
     public ResponseEntity<?> createUserProfile(@RequestBody ProfileCreationRequest request){
         return ResponseEntity.ok().body(profileService.createUserProfile(request));
     }
 
-    @GetMapping("/profile/{id}")
+    @GetMapping("/profile/users/{id}")
     public ResponseEntity<?> findProfileById(@PathVariable String id){
         return ResponseEntity.ok().body(profileService.findProfileById(id));
     }
 
-    @DeleteMapping("/profile/{id}")
+    @DeleteMapping("/profile/users/{id}")
     public ResponseEntity<?> deleteProfileById(@PathVariable String id){
         return ResponseEntity.ok().body(profileService.deleteProfileById(id));
     }
 
-    @PutMapping("/profile/{id}")
+    @PutMapping("/profile/users/{id}")
     public ResponseEntity<?> updateProfileById(@PathVariable String id, @RequestBody ProfileCreationRequest request){
         return ResponseEntity.ok().body(profileService.updateProfileById(id, request));
 }}

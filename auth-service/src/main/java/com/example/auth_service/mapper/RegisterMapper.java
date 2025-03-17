@@ -1,5 +1,6 @@
 package com.example.auth_service.mapper;
 
+import com.example.auth_service.dto.request.ProfileCreationRequest;
 import com.example.auth_service.dto.request.RegisterUserRequest;
 import com.example.auth_service.dto.response.RegisterUserResponse;
 import com.example.auth_service.entity.User;
@@ -13,4 +14,5 @@ public interface RegisterMapper {
     User toUser(RegisterUserRequest registerUserRequest);
 
     RegisterUserResponse toRegisterUserResponse(User user);
+
 }

@@ -1,4 +1,4 @@
-package com.example.profile_service.dto.request;
+package com.example.auth_service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,8 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfileCreationRequest {
-    private String user_id;
+public class UserProfileResponse {
+    private String id;
     private String firstName;
     private String lastName;
     private LocalDate dob;

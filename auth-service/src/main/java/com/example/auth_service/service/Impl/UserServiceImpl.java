@@ -4,8 +4,10 @@ import com.example.auth_service.dto.request.RegisterUserRequest;
 import com.example.auth_service.dto.response.RegisterUserResponse;
 import com.example.auth_service.entity.User;
 import com.example.auth_service.handle.CustomRunTimeException;
+import com.example.auth_service.mapper.ProfileMapper;
 import com.example.auth_service.mapper.RegisterMapper;
 import com.example.auth_service.repository.UserRepository;
+import com.example.auth_service.repository.httpclient.ProfileClient;
 import com.example.auth_service.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RegisterMapper registerMapper;
 
+    @Autowired
+    private ProfileMapper profileMapper;
+
+    @Autowired
+    private ProfileClient profileClient;
 
     @Override
     public Optional<User> findUserById(String id) {
@@ -64,9 +71,28 @@ public class UserServiceImpl implements UserService {
         User user = registerMapper.toUser(registerUserRequest);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(user); // Thêm user vào db
 
-        return registerMapper.toRegisterUserResponse(savedUser);
+        // Tạo profile cho user
+        var profileCreationRequest = profileMapper.toProfileCreationRequest(registerUserRequest);
+
+
+        // Set user_id cho profileCreationRequest
+        profileCreationRequest.setUser_id(savedUser.getId());
+
+        log.info("ProfileCreationRequest: {}", profileCreationRequest);
+
+        // Gọi sang service profile để tạo profile với thông tin user_id
+        profileClient.addUserProfile(profileCreationRequest);
+
+        // Tạo response
+        var response = registerMapper.toRegisterUserResponse(savedUser);
+        response.setFirstName(registerUserRequest.getFirstName());
+        response.setLastName(registerUserRequest.getLastName());
+        response.setDob(registerUserRequest.getDob());
+        response.setCity(registerUserRequest.getCity());
+        response.setPhone(registerUserRequest.getPhone());
+        return response;
     }
 
 }
