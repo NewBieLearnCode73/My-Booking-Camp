@@ -29,8 +29,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public UserProfileResponse findProfileById(String id) {
-        Profile profile = profileRepository.findById(id).orElse(null);
+    public UserProfileResponse findProfileByUserId(String user_id) {
+        Profile profile = profileRepository.findByUser_id(user_id).orElse(null);
 
         return profileMapper.toUserProfileResponse(profile);
     }

@@ -1,11 +1,8 @@
-package com.example.auth_service.handle;
+package com.example.api_gateway.handle;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 public class ErrorResponse {
     private int status;
     private String message;
@@ -13,7 +10,6 @@ public class ErrorResponse {
 
     public ErrorResponse(){
         this.timeStamp = System.currentTimeMillis();
-
     }
 
     public ErrorResponse(int status, String message){

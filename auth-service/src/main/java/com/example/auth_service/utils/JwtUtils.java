@@ -26,7 +26,7 @@ public class JwtUtils {
 
     public String generateToken(UserDetails userDetails){
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", userDetails.getAuthorities().toString());
+        claims.put("role", userDetails.getAuthorities().iterator().next().toString());
 
         return Jwts
                 .builder()
@@ -56,6 +56,10 @@ public class JwtUtils {
 
     public Date extractExpiration(String token){
         return claims(token).getExpiration();
+    }
+
+    public String getRole(String token){
+        return (String) claims(token).get("role");
     }
 
     // Check if the token is valid (The token is not expired, the signature is valid, the token is not empty)
