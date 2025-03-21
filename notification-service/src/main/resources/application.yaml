@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: notification-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/notification-service?authSource=admin
+
+
+server:
+    port: 8092
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+apiKey: 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
