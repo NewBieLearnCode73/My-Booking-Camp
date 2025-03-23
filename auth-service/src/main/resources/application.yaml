@@ -2,28 +2,42 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:mysql://localhost:3310/AuthDB?createDatabaseIfNotExist=true
-    username: root
-    password: root
+    url: ${AUTH_SERVICE_DB_URL}
+    username: ${AUTH_SERVICE_DB_USERNAME}
+    password: ${AUTH_SERVICE_DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
   data:
     redis:
-      host: localhost
-      port: 6379
-      database: 0
+      host: ${AUTH_SERVICE_REDIS_HOST}
+      port: ${AUTH_SERVICE_REDIS_PORT}
+      database: ${AUTH_SERVICE_REDIS_DB}
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: "*"
+    consumer:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+        group-id: auth-service
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring.json.trusted.packages: "*"
 
 
 server:
-  port: 8090
+  port: ${AUTH_SERVICE_SERVER_PORT}
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${REGISTRY_URL}
 
 
 jwt:
-  secret: 413D111FBFB399AA704EC2F2B9E976CEBE57B295EFAF7DD868F696DE772935537EB0FA9B67B5D2D151CF465AD36942566AD55CBCE100EED2BFA25A8D03EE4263
+  secret: ${AUTH_SERVICE_JWT_SECRET}

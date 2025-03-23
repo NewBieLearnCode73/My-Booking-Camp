@@ -55,6 +55,11 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0'
+
+	implementation 'org.springframework.kafka:spring-kafka'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 }
 
 dependencyManagement {

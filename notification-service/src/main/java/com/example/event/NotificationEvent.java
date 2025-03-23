@@ -1,4 +1,4 @@
-package com.example.notification_service.dto.request;
+package com.example.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Recipient {
+public class NotificationEvent {
     private String email;
     private String name;
+    private String subject;
+    private String htmlContent;
 }

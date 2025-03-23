@@ -10,5 +10,4 @@ public class AnotherConfig {
     public WebClient.Builder loadBalancedWebClientBuilder() {
         return WebClient.builder();
     }
-
 }

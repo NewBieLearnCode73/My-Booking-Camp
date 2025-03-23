@@ -9,8 +9,10 @@ import com.example.auth_service.mapper.RegisterMapper;
 import com.example.auth_service.repository.UserRepository;
 import com.example.auth_service.repository.httpclient.ProfileClient;
 import com.example.auth_service.service.UserService;
+import com.example.event.NotificationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ProfileClient profileClient;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public Optional<User> findUserById(String id) {
@@ -92,6 +97,17 @@ public class UserServiceImpl implements UserService {
         response.setDob(registerUserRequest.getDob());
         response.setCity(registerUserRequest.getCity());
         response.setPhone(registerUserRequest.getPhone());
+
+        NotificationEvent notificationEvent = NotificationEvent.builder()
+                        .email(savedUser.getEmail()).name(response.getFirstName() + " " + response.getLastName())
+                        .subject("Welcome to MyBookingCamp")
+                        .htmlContent("<h1>Welcome to MyBookingCamp</h1>")
+                .build();
+
+
+        kafkaTemplate.send("user-registered", notificationEvent);
+
+
         return response;
     }
 

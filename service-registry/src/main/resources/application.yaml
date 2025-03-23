@@ -1,9 +1,9 @@
 server:
-  port: 8761
+  port: ${REGISTRY_SERVICE_SERVER_PORT}
 
 eureka:
   instance:
-    hostname: localhost
+    hostname: ${REGISTRY_HOST}
 
   client:
     register-with-eureka: false
