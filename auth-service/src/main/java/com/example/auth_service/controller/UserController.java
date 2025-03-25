@@ -2,6 +2,7 @@ package com.example.auth_service.controller;
 
 import com.example.auth_service.dto.request.RegisterUserRequest;
 import com.example.auth_service.service.UserService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,13 @@ public class UserController {
     private UserService userService;
 
     // Register
+    @PermitAll
     @PostMapping("/auth/register")
     public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterUserRequest registerUserRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(registerUserRequest));
     }
 
+    @PermitAll
     @GetMapping("/auth/activate")
     public ResponseEntity<?> activateUser(@RequestParam String code){
         userService.activateUser(code);

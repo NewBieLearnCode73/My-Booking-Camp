@@ -109,7 +109,6 @@ public class UserServiceImpl implements UserService {
                 "<a href=\"" + activationUrl + "\">Activate Account</a>" +
                 "</body></html>";
 
-        log.info("HTML: {}", html);
 
         NotificationEvent notificationEvent = NotificationEvent.builder()
                         .email(myUser.getEmail()).name(response.getFirstName() + " " + response.getLastName())
@@ -118,8 +117,9 @@ public class UserServiceImpl implements UserService {
                 .build();
 
 
+        log.info("Prepare to send email: {}", myUser.getEmail());
         kafkaTemplate.send("user-registered", notificationEvent);
-
+        log.info("Sent email: {}", myUser.getEmail());
 
         return response;
     }

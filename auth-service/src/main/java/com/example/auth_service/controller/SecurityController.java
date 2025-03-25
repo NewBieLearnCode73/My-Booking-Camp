@@ -4,6 +4,7 @@ import com.example.auth_service.entity.LoginForm;
 import com.example.auth_service.service.MyJwtRedisService;
 import com.example.auth_service.service.UserService;
 import com.example.auth_service.utils.JwtUtils;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class SecurityController {
     @Autowired
     private MyJwtRedisService myJwtRedisService;
 
+    @PermitAll
     @PostMapping("/auth/login")
     public ResponseEntity<?> authAndGetToken(@RequestBody LoginForm loginForm){
         Authentication authentication = authenticationManager.authenticate(
@@ -67,6 +69,7 @@ public class SecurityController {
         }
     }
 
+    @PermitAll
     @PostMapping("/auth/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> token){
         String refreshToken = token.get("refresh_token");
