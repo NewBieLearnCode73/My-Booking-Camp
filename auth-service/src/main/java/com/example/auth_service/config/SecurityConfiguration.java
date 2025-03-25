@@ -55,6 +55,7 @@ public class SecurityConfiguration {
             res.requestMatchers(HttpMethod.POST, "auth/login").permitAll();
             res.requestMatchers(HttpMethod.POST, "auth/refresh-token").permitAll();
             res.requestMatchers(HttpMethod.POST, "auth/register").permitAll();
+            res.requestMatchers(HttpMethod.GET, "auth/activate").permitAll();
             res.anyRequest().authenticated();
         });
 

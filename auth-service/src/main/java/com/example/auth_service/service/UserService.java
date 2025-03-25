@@ -13,4 +13,5 @@ public interface UserService {
     public Optional<User> findUserById(String id);
     public String getUserIdByUsername(String username);
     public RegisterUserResponse registerUser(RegisterUserRequest registerUserRequest);
+    public void activateUser(String code);
 }

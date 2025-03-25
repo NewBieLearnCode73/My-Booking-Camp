@@ -32,7 +32,8 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
             "/auth/login",
             "/auth/register",
             "/auth/refresh-token",
-            "/auth/validate-token"
+            "/auth/validate-token",
+            "/auth/activate"
     );
 
     @Override

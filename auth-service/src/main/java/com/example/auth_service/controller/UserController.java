@@ -20,4 +20,10 @@ public class UserController {
     public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterUserRequest registerUserRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(registerUserRequest));
     }
+
+    @GetMapping("/auth/activate")
+    public ResponseEntity<?> activateUser(@RequestParam String code){
+        userService.activateUser(code);
+        return ResponseEntity.status(HttpStatus.OK).body("User activated successfully");
+    }
 }

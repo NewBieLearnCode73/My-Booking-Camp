@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -85,8 +86,6 @@ public class UserServiceImpl implements UserService {
         // Set user_id cho profileCreationRequest
         profileCreationRequest.setUser_id(savedUser.getId());
 
-        log.info("ProfileCreationRequest: {}", profileCreationRequest);
-
         // Gọi sang service profile để tạo profile với thông tin user_id
         profileClient.addUserProfile(profileCreationRequest);
 
@@ -98,10 +97,24 @@ public class UserServiceImpl implements UserService {
         response.setCity(registerUserRequest.getCity());
         response.setPhone(registerUserRequest.getPhone());
 
+        User myUser = userRepository.findUserByUsername(savedUser.getUsername());
+
+        String activationUrl = "http://localhost:8080/auth/activate?code=" + myUser.getActivationCode();
+
+        // HTML
+        String html = "<html><body>" +
+                "Please use this token to activate your account with " + myUser.getEmail() + ":<br>" +
+                "<b>" + myUser.getActivationCode() + "</b><br>" +
+                "Or you can click this link to activate your account:<br>" +
+                "<a href=\"" + activationUrl + "\">Activate Account</a>" +
+                "</body></html>";
+
+        log.info("HTML: {}", html);
+
         NotificationEvent notificationEvent = NotificationEvent.builder()
-                        .email(savedUser.getEmail()).name(response.getFirstName() + " " + response.getLastName())
+                        .email(myUser.getEmail()).name(response.getFirstName() + " " + response.getLastName())
                         .subject("Welcome to MyBookingCamp")
-                        .htmlContent("<h1>Welcome to MyBookingCamp</h1>")
+                        .htmlContent(html)
                 .build();
 
 
@@ -109,6 +122,24 @@ public class UserServiceImpl implements UserService {
 
 
         return response;
+    }
+
+    @Override
+    @Transactional
+    public void activateUser(String code) {
+        User user = userRepository.findByActivationCode(code);
+        if (user == null) {
+            throw new CustomRunTimeException("Invalid activation code!");
+        }
+
+
+        if(!Objects.equals(user.getActivationCode(), code)){
+            throw new CustomRunTimeException("Invalid activation code!");
+        }
+
+        user.setActivation(true);
+        user.setActivationCode(null);
+        userRepository.save(user);
     }
 
 }
