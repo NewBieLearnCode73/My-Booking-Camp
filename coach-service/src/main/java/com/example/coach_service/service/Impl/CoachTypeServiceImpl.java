@@ -1,11 +1,14 @@
 package com.example.coach_service.service.Impl;
 
+import com.example.coach_service.dto.request.CoachTypeRequest;
 import com.example.coach_service.entity.CoachType;
+import com.example.coach_service.mapper.CoachTypeMapper;
 import com.example.coach_service.repository.CoachTypeRepository;
 import com.example.coach_service.service.CoachTypeService;
 import com.example.coach_service.utils.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +20,13 @@ public class CoachTypeServiceImpl implements CoachTypeService {
     private CoachTypeRepository coachTypeRepository;
 
 
+    @Autowired
+    private CoachTypeMapper coachTypeMapper;
+
     @Override
-    public CoachType addCoachType(CoachType coachType) {
-        return coachTypeRepository.save(coachType);
+    @Transactional
+    public CoachType addCoachType(CoachTypeRequest coachTypeRequest) {
+        return coachTypeRepository.save(coachTypeMapper.toCoachType(coachTypeRequest));
     }
 
     @Override
@@ -43,6 +50,7 @@ public class CoachTypeServiceImpl implements CoachTypeService {
     }
 
     @Override
+    @Transactional
     public CoachType updateCoachTypeByName(String name, CoachType coachType) {
         Optional<CoachType> coachType1 = coachTypeRepository.findByName(name);
 

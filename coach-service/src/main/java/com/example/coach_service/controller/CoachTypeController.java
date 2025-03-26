@@ -1,5 +1,6 @@
 package com.example.coach_service.controller;
 
+import com.example.coach_service.dto.request.CoachTypeRequest;
 import com.example.coach_service.entity.CoachType;
 import com.example.coach_service.service.CoachTypeService;
 import com.example.coach_service.utils.Type;
@@ -37,7 +38,7 @@ public class CoachTypeController {
     }
 
     @PostMapping("/coach-type")
-    public ResponseEntity<?> addCoachType(@RequestBody CoachType coachType){
-        return ResponseEntity.status(HttpStatus.OK.value()).body(coachTypeService.addCoachType(coachType));
+    public ResponseEntity<?> addCoachType(@RequestBody CoachTypeRequest coachTypeRequest){
+        return ResponseEntity.status(HttpStatus.OK.value()).body(coachTypeService.addCoachType(coachTypeRequest));
     }
 }

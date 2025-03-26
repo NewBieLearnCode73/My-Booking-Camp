@@ -14,6 +14,4 @@ public interface RegisterMapper {
     User toUser(RegisterUserRequest registerUserRequest);
 
     RegisterUserResponse toRegisterUserResponse(User user);
-
-
 }
