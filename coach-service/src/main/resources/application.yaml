@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: coach-service
+  data:
+    mongodb:
+      uri: ${COACH_SERVICE_DB_URL}
+
+server:
+  port: ${COACH_SERVICE_SERVER_PORT}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${REGISTRY_URL}

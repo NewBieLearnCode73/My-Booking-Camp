@@ -1,10 +1,10 @@
-package com.example.trip_servie;
+package com.example.trip_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TripServieApplicationTests {
+class TripServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

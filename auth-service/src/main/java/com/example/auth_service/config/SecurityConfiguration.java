@@ -52,10 +52,6 @@ public class SecurityConfiguration {
 
 
         httpSecurity.authorizeHttpRequests(res ->{
-//            res.requestMatchers(HttpMethod.POST, "auth/login").permitAll();
-//            res.requestMatchers(HttpMethod.POST, "auth/refresh-token").permitAll();
-//            res.requestMatchers(HttpMethod.POST, "auth/register").permitAll();
-//            res.requestMatchers(HttpMethod.GET, "auth/activate").permitAll();
             res.requestMatchers("/auth/**").permitAll();
             res.anyRequest().authenticated();
         });
