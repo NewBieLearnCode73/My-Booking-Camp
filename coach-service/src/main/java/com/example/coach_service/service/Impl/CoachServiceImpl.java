@@ -21,15 +21,16 @@ public class CoachServiceImpl implements CoachService {
     @Autowired
     private CoachTypeRepository coachTypeRepository;
 
+
     @Override
-    public void createCoach(Coach coach) {
+    public Coach createCoach(Coach coach) {
         Optional<CoachType> myCoachType = coachTypeRepository.findById(coach.getCoachTypeId());
 
         if(!myCoachType.isPresent()){
             throw new CustomRunTimeException("Coach Type not found");
         }
 
-        coachRepository.save(coach);
+        return coachRepository.save(coach);
     }
 
     @Override

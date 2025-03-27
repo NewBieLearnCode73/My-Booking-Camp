@@ -1,7 +1,6 @@
 package com.example.coach_service.controller;
 
 import com.example.coach_service.dto.request.CoachTypeRequest;
-import com.example.coach_service.entity.CoachType;
 import com.example.coach_service.service.CoachTypeService;
 import com.example.coach_service.utils.Type;
 import lombok.extern.slf4j.Slf4j;
