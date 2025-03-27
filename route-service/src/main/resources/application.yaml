@@ -1,3 +1,9 @@
 spring:
   application:
     name: route-service
+  data:
+    mongodb:
+      uri: ${ROUTE_SERVICE_DB_URL}
+
+server:
+    port: ${ROUTE_SERVICE_SERVER_PORT}
