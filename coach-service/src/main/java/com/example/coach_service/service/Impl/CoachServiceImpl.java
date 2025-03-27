@@ -1,8 +1,11 @@
 package com.example.coach_service.service.Impl;
 
+import com.example.coach_service.dto.request.CoachRequest;
+import com.example.coach_service.dto.response.CoachResponse;
 import com.example.coach_service.entity.Coach;
 import com.example.coach_service.entity.CoachType;
 import com.example.coach_service.handle.CustomRunTimeException;
+import com.example.coach_service.mapper.CoachMapper;
 import com.example.coach_service.repository.CoachRepository;
 import com.example.coach_service.repository.CoachTypeRepository;
 import com.example.coach_service.service.CoachService;
@@ -21,29 +24,36 @@ public class CoachServiceImpl implements CoachService {
     @Autowired
     private CoachTypeRepository coachTypeRepository;
 
+    @Autowired
+    private CoachMapper coachMapper;
 
     @Override
-    public Coach createCoach(Coach coach) {
+    public CoachResponse createCoach(CoachRequest coachRequest) {
+        Coach coach = coachMapper.toCoach(coachRequest);
+
         Optional<CoachType> myCoachType = coachTypeRepository.findById(coach.getCoachTypeId());
 
-        if(!myCoachType.isPresent()){
+        if(myCoachType.isEmpty()){
             throw new CustomRunTimeException("Coach Type not found");
         }
 
-        return coachRepository.save(coach);
+        return coachMapper.toCoachResponse(coachRepository.save(coach));
     }
 
     @Override
-    public void updateCoachById(String id, Coach coach) {
+    public void updateCoachById(String id, CoachRequest coachRequest) {
+
+        Coach coach = coachMapper.toCoach(coachRequest);
+
         Optional<Coach> myCoach = coachRepository.findById(id);
 
-        if(!myCoach.isPresent()){
+        if(myCoach.isEmpty()){
             throw new CustomRunTimeException("Coach not found");
         }
 
         Optional<CoachType> myCoachType = coachTypeRepository.findById(coach.getCoachTypeId());
 
-        if(!myCoachType.isPresent()){
+        if(myCoachType.isEmpty()){
             throw new CustomRunTimeException("Coach Type not found");
         }
 
@@ -54,7 +64,7 @@ public class CoachServiceImpl implements CoachService {
     public void deleteCoachById(String id) {
         Optional<Coach> myCoach = coachRepository.findById(id);
 
-        if(!myCoach.isPresent()){
+        if(myCoach.isEmpty()){
             throw new CustomRunTimeException("Coach not found");
         }
 
@@ -62,29 +72,29 @@ public class CoachServiceImpl implements CoachService {
     }
 
     @Override
-    public Coach getCoachById(String id) {
+    public CoachResponse getCoachById(String id) {
         Optional<Coach> myCoach = coachRepository.findById(id);
 
-        if(!myCoach.isPresent()){
+        if(myCoach.isEmpty()){
             throw new CustomRunTimeException("Coach not found");
         }
 
-        return myCoach.get();
+        return coachMapper.toCoachResponse(myCoach.get());
     }
 
     @Override
-    public Coach getCoachByLicensePlate(String licensePlate) {
+    public CoachResponse getCoachByLicensePlate(String licensePlate) {
         Coach myCoach = coachRepository.findByLicensePlate(licensePlate);
 
         if(myCoach == null){
             throw new CustomRunTimeException("Coach not found");
         }
 
-        return myCoach;
+        return coachMapper.toCoachResponse(myCoach);
     }
 
     @Override
-    public List<Coach> getAllCoaches() {
-        return coachRepository.findAll();
+    public List<CoachResponse> getAllCoaches() {
+        return coachRepository.findAll().stream().map(coachMapper::toCoachResponse).toList();
     }
 }

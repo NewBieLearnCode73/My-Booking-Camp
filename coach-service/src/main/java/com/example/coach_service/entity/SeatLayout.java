@@ -1,5 +1,8 @@
 package com.example.coach_service.entity;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SeatLayout {
+
+    @Valid
+    @NotNull(message = "Seat rows cannot be null")
     private List<SeatRow> seatRows;
 
     public int calculateTotalSeats(){

@@ -3,6 +3,7 @@ package com.example.coach_service.controller;
 import com.example.coach_service.dto.request.CoachTypeRequest;
 import com.example.coach_service.service.CoachTypeService;
 import com.example.coach_service.utils.Type;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class CoachTypeController {
     }
 
     @PostMapping("/coach-type")
-    public ResponseEntity<?> addCoachType(@RequestBody CoachTypeRequest coachTypeRequest){
+    public ResponseEntity<?> addCoachType(@RequestBody @Valid  CoachTypeRequest coachTypeRequest){
         return ResponseEntity.status(HttpStatus.OK.value()).body(coachTypeService.addCoachType(coachTypeRequest));
     }
 }

@@ -1,7 +1,9 @@
 package com.example.coach_service.controller;
 
+import com.example.coach_service.dto.request.CoachRequest;
 import com.example.coach_service.entity.Coach;
 import com.example.coach_service.service.CoachService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,8 @@ public class CoachController {
     }
 
     @PostMapping("/coach")
-    public ResponseEntity<?> createCoach(@RequestBody Coach coach) {
-        return ResponseEntity.status(HttpStatus.OK.value()).body(coachService.createCoach(coach));
+    public ResponseEntity<?> createCoach(@RequestBody @Valid CoachRequest coachRequest) {
+        return ResponseEntity.status(HttpStatus.OK.value()).body(coachService.createCoach(coachRequest));
     }
 
     @GetMapping("/coach/{id}")
