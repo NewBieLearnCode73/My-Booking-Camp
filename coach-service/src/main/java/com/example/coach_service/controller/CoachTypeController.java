@@ -18,8 +18,12 @@ public class CoachTypeController {
     private CoachTypeService coachTypeService;
 
     @GetMapping("/coach-type")
-    public ResponseEntity<?> getAllCoachType(){
-        return ResponseEntity.status(HttpStatus.OK.value()).body(coachTypeService.getAllCoachType());
+    public ResponseEntity<?> getAllCoachType(
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy
+    ){
+        return ResponseEntity.status(HttpStatus.OK.value()).body(coachTypeService.getAllCoachType(pageNo, pageSize, sortBy));
     }
 
     @GetMapping("/coach-type/{id}")
@@ -33,8 +37,12 @@ public class CoachTypeController {
     }
 
     @GetMapping("/coach-type/type/{type}")
-    public ResponseEntity<?> getAllCoachTypeByType(@PathVariable String type){
-        return ResponseEntity.status(HttpStatus.OK.value()).body(coachTypeService.getAllCoachTypeByType(Type.valueOf(type)));
+    public ResponseEntity<?> getAllCoachTypeByType(
+            @PathVariable String type,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy){
+        return ResponseEntity.status(HttpStatus.OK.value()).body(coachTypeService.getAllCoachTypeByType(Type.valueOf(type), pageNo, pageSize, sortBy));
     }
 
     @PostMapping("/coach-type")

@@ -2,6 +2,7 @@ package com.example.coach_service.service.Impl;
 
 import com.example.coach_service.dto.request.CoachTypeRequest;
 import com.example.coach_service.dto.response.CoachTypeResponse;
+import com.example.coach_service.dto.response.PaginationResponseDTO;
 import com.example.coach_service.entity.CoachType;
 import com.example.coach_service.handle.CustomRunTimeException;
 import com.example.coach_service.mapper.CoachTypeMapper;
@@ -9,6 +10,10 @@ import com.example.coach_service.repository.CoachTypeRepository;
 import com.example.coach_service.service.CoachTypeService;
 import com.example.coach_service.utils.Type;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.yaml.snakeyaml.util.EnumUtils;
@@ -38,10 +43,20 @@ public class CoachTypeServiceImpl implements CoachTypeService {
     }
 
     @Override
-    public List<CoachTypeResponse> getAllCoachTypeByType(Type type) {
-        List<CoachType> myCoachTypeList = coachTypeRepository.findAllByType(type);
+    public PaginationResponseDTO<CoachTypeResponse> getAllCoachTypeByType(Type type, int pageNo, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 
-        return myCoachTypeList.stream().map(coachTypeMapper::toCoachTypeResponse).toList();
+        Page<CoachType> coachTypePage = coachTypeRepository.findAllByType(type, pageable);
+
+        List<CoachTypeResponse> coachTypeResponses = coachTypePage.stream().map(coachTypeMapper::toCoachTypeResponse).toList();
+
+        return PaginationResponseDTO.<CoachTypeResponse>builder()
+                .items(coachTypeResponses)
+                .totalItems(coachTypePage.getTotalElements())
+                .totalPages(coachTypePage.getTotalPages())
+                .currentPage(coachTypePage.getNumber())
+                .pageSize(coachTypePage.getSize())
+                .build();
     }
 
     @Override
@@ -50,10 +65,20 @@ public class CoachTypeServiceImpl implements CoachTypeService {
     }
 
     @Override
-    public List<CoachTypeResponse> getAllCoachType() {
-        List<CoachType> myCoachTypeList = coachTypeRepository.findAll();
+    public PaginationResponseDTO<CoachTypeResponse> getAllCoachType(int pageNo, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 
-        return myCoachTypeList.stream().map(coachTypeMapper::toCoachTypeResponse).toList();
+        Page<CoachType> coachTypePage = coachTypeRepository.findAll(pageable);
+
+        List<CoachTypeResponse> coachTypeResponses = coachTypePage.stream().map(coachTypeMapper::toCoachTypeResponse).toList();
+
+        return PaginationResponseDTO.<CoachTypeResponse>builder()
+                .items(coachTypeResponses)
+                .totalItems(coachTypePage.getTotalElements())
+                .totalPages(coachTypePage.getTotalPages())
+                .currentPage(coachTypePage.getNumber())
+                .pageSize(coachTypePage.getSize())
+                .build();
     }
 
     @Override
