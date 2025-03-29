@@ -2,6 +2,7 @@ package com.example.coach_service.service;
 
 import com.example.coach_service.dto.request.CoachRequest;
 import com.example.coach_service.dto.response.CoachResponse;
+import com.example.coach_service.dto.response.PaginationResponseDTO;
 import com.example.coach_service.entity.Coach;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +15,5 @@ public interface CoachService {
     void deleteCoachById(String id);
     CoachResponse getCoachById(String id);
     CoachResponse getCoachByLicensePlate(String licensePlate);
-    List<CoachResponse> getAllCoaches();
+    PaginationResponseDTO<CoachResponse> getAllCoaches(int pageNo, int pageSize, String sortBy);
 }

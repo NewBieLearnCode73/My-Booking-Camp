@@ -2,6 +2,7 @@ package com.example.coach_service.service.Impl;
 
 import com.example.coach_service.dto.request.CoachRequest;
 import com.example.coach_service.dto.response.CoachResponse;
+import com.example.coach_service.dto.response.PaginationResponseDTO;
 import com.example.coach_service.entity.Coach;
 import com.example.coach_service.entity.CoachType;
 import com.example.coach_service.handle.CustomRunTimeException;
@@ -10,6 +11,10 @@ import com.example.coach_service.repository.CoachRepository;
 import com.example.coach_service.repository.CoachTypeRepository;
 import com.example.coach_service.service.CoachService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -94,7 +99,20 @@ public class CoachServiceImpl implements CoachService {
     }
 
     @Override
-    public List<CoachResponse> getAllCoaches() {
-        return coachRepository.findAll().stream().map(coachMapper::toCoachResponse).toList();
+    public PaginationResponseDTO<CoachResponse> getAllCoaches(int pageNo, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+
+        Page<Coach> coachPage = coachRepository.findAll(pageable);
+
+        List<CoachResponse> coachResponses = coachPage.stream().map(coachMapper::toCoachResponse).toList();
+
+        return PaginationResponseDTO.<CoachResponse>builder()
+                .items(coachResponses)
+                .totalItems(coachPage.getTotalElements())
+                .totalPages(coachPage.getTotalPages())
+                .currentPage(coachPage.getNumber())
+                .pageSize(coachPage.getSize())
+                .build();
+
     }
 }

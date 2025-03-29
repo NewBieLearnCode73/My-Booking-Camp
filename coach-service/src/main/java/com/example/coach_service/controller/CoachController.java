@@ -15,8 +15,12 @@ public class CoachController {
     private CoachService coachService;
 
     @GetMapping("/coach")
-    public ResponseEntity<?> getAllCoaches() {
-        return ResponseEntity.status(HttpStatus.OK.value()).body(coachService.getAllCoaches());
+    public ResponseEntity<?> getAllCoaches(
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy
+    ) {
+        return ResponseEntity.status(HttpStatus.OK.value()).body(coachService.getAllCoaches(pageNo, pageSize, sortBy));
     }
 
     @PostMapping("/coach")
