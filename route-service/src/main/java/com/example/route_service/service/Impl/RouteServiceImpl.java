@@ -1,6 +1,7 @@
 package com.example.route_service.service.Impl;
 
 import com.example.route_service.dto.request.RouteRequest;
+import com.example.route_service.dto.response.PaginationResponseDTO;
 import com.example.route_service.dto.response.RouteResponse;
 import com.example.route_service.entity.Route;
 import com.example.route_service.handle.CustomRunTimeException;
@@ -8,6 +9,10 @@ import com.example.route_service.mapper.RouteMapper;
 import com.example.route_service.repository.RouteRepository;
 import com.example.route_service.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +26,20 @@ public class RouteServiceImpl implements RouteService {
     private RouteMapper routeMapper;
 
     @Override
-    public List<RouteResponse> getAllRoutes() {
-        List<Route> routes = routeRepository.findAll();
+    public PaginationResponseDTO<RouteResponse> getAllRoutes(int pageNo, int pageSize,String sortBy) {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
 
-        return routes.stream().map(routeMapper::toRouteResponse).toList();
+        Page<Route> pagedResult = routeRepository.findAll(paging);
+
+        List<RouteResponse> routeResponses = pagedResult.stream().map(routeMapper::toRouteResponse).toList();
+
+        return PaginationResponseDTO.<RouteResponse>builder()
+                .items(routeResponses)
+                .currentPage(pagedResult.getNumber())
+                .totalItems(pagedResult.getTotalElements())
+                .totalPages(pagedResult.getTotalPages())
+                .pageSize(pagedResult.getSize())
+                .build();
     }
 
     @Override
