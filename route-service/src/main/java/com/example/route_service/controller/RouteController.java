@@ -15,9 +15,11 @@ public class RouteController {
     private RouteService routeService;
 
     @GetMapping("/route")
-    public ResponseEntity<?> getAllRoutes(@RequestParam(defaultValue = "0") int pageNo,
-                                         @RequestParam(defaultValue = "10") int pageSize,
-                                         @RequestParam(defaultValue = "id") String sortBy) {
+    public ResponseEntity<?> getAllRoutes(
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy
+    ) {
         return ResponseEntity.status(HttpStatus.OK.value()).body(routeService.getAllRoutes(pageNo, pageSize, sortBy));
     }
 

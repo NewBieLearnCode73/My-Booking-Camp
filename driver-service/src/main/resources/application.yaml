@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: driver-service
+  data:
+    mongodb:
+      uri: ${DRIVER_SERVICE_DB_URL}
+
+server:
+    port: ${DRIVER_SERVICE_SERVER_PORT}
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${REGISTRY_URL}
