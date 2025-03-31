@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @Builder
@@ -23,8 +25,10 @@ public class Trip {
     private String routeId;
     private String coachId;
     private String driverId;
-    private LocalDateTime departureTime;
-    private LocalDateTime arrivalTime;
+    private LocalDate departureDate;
+    private LocalTime departureTime;
+    private LocalDate arrivalDate;
+    private LocalTime arrivalTime;
     private TripStatus status;
     private Double basePrice;
 }

@@ -1,3 +1,10 @@
 spring:
   application:
     name: trip-service
+
+  data:
+    mongodb:
+      uri: ${TRIP_SERVICE_DB_URL}
+
+server:
+  port: ${TRIP_SERVICE_SERVER_PORT}
