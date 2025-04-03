@@ -10,8 +10,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -21,7 +22,6 @@ import java.time.LocalTime;
 public class Trip {
     @Id
     private String id;
-
     private String routeId;
     private String coachId;
     private String driverId;
@@ -31,4 +31,5 @@ public class Trip {
     private LocalTime arrivalTime;
     private TripStatus status;
     private Double basePrice;
+
 }

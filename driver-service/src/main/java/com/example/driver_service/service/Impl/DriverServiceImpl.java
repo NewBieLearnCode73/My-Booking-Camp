@@ -9,11 +9,16 @@ import com.example.driver_service.mapper.DriverMapper;
 import com.example.driver_service.repository.DriverRepository;
 import com.example.driver_service.service.DriverService;
 import com.example.driver_service.utils.DriverStatus;
+import com.example.event.TripValidationRequest;
+import com.example.event.TripValidationResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +26,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class DriverServiceImpl implements DriverService {
     @Autowired
     private DriverRepository driverRepository;
 
     @Autowired
     private DriverMapper driverMapper;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public PaginationResponseDTO<DriverResponse> getAllDrivers(int pageNo, int pageSize, String sortBy) {
@@ -103,6 +112,22 @@ public class DriverServiceImpl implements DriverService {
         }
 
         throw new CustomRunTimeException("Driver status not found");
+    }
+
+    @Override
+    @KafkaListener(topics = "validate-driver", groupId = "driver-service")
+    public void validateDriver(TripValidationRequest tripValidationRequest) {
+        boolean isDriverValid = driverRepository.existsById(tripValidationRequest.getDriverId());
+
+        log.info("Driver validation result: {}", isDriverValid);
+
+        TripValidationResponse tripValidationResponse = new TripValidationResponse();
+
+        tripValidationResponse.setTripId(tripValidationRequest.getTripId());
+        tripValidationResponse.setType("driver");
+        tripValidationResponse.setIsValid(isDriverValid);
+
+        kafkaTemplate.send("trip-validation-response", tripValidationResponse);
     }
 
 

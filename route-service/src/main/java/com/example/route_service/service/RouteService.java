@@ -1,5 +1,6 @@
 package com.example.route_service.service;
 
+import com.example.event.TripValidationRequest;
 import com.example.route_service.dto.request.RouteRequest;
 import com.example.route_service.dto.response.PaginationResponseDTO;
 import com.example.route_service.dto.response.RouteResponse;
@@ -15,4 +16,5 @@ public interface RouteService {
     RouteResponse getRouteById(String id);
     RouteResponse updateRouteById(String id,RouteRequest routeRequest);
     void deleteRoute(String id);
+    void validateRoute(TripValidationRequest tripValidationRequest);
 }

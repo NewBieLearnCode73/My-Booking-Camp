@@ -1,5 +1,6 @@
 package com.example.trip_service.service.Impl;
 
+import com.example.event.TripValidationRequest;
 import com.example.trip_service.dto.request.TripRequest;
 import com.example.trip_service.dto.response.PaginationResponseDTO;
 import com.example.trip_service.dto.response.TripResponse;
@@ -15,12 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,6 +34,11 @@ public class TripServiceImpl implements TripService {
 
     @Autowired
     private TripMapper tripMapper;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    private Trip tempTrip;
 
     @Override
     public PaginationResponseDTO<TripResponse> getTrips(int pageNo, int pageSize, String sortBy) {
@@ -56,10 +64,6 @@ public class TripServiceImpl implements TripService {
         LocalDate departureDateObj;
         LocalTime fromObj;
         LocalTime toObj;
-
-        log.info("departureDate: " + departureDate);
-        log.info("from: " + from);
-        log.info("to: " + to);
 
         if(departureDate == null || from == null || to == null) {
             departureDateObj = LocalDate.now();
@@ -122,10 +126,28 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public TripResponse createTrip(TripRequest tripRequest) {
+    public String createTrip(TripRequest tripRequest) {
         Trip trip = tripMapper.tripRequestToTrip(tripRequest);
 
-        return tripMapper.tripToTripResponse(tripRepository.save(trip));
+        TripValidationRequest tripValidationRequest = new TripValidationRequest();
+
+        tripValidationRequest.setTripId(UUID.randomUUID().toString());
+        tripValidationRequest.setRouteId(tripRequest.getRouteId());
+        tripValidationRequest.setDriverId(tripRequest.getDriverId());
+        tripValidationRequest.setCoachId(tripRequest.getCoachId());
+
+        trip.setId(tripValidationRequest.getTripId());
+
+
+        trip.setStatus(TripStatus.PENDING);
+        tripRepository.save(trip);
+
+
+        kafkaTemplate.send("validate-coach", tripValidationRequest);
+        kafkaTemplate.send("validate-driver", tripValidationRequest);
+        kafkaTemplate.send("validate-route", tripValidationRequest);
+        
+        return "Trip validation in progress, waiting for confirmation.";
     }
 
     @Override

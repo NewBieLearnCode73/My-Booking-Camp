@@ -1,5 +1,7 @@
 package com.example.route_service.service.Impl;
 
+import com.example.event.TripValidationRequest;
+import com.example.event.TripValidationResponse;
 import com.example.route_service.dto.request.RouteRequest;
 import com.example.route_service.dto.response.PaginationResponseDTO;
 import com.example.route_service.dto.response.RouteResponse;
@@ -8,22 +10,29 @@ import com.example.route_service.handle.CustomRunTimeException;
 import com.example.route_service.mapper.RouteMapper;
 import com.example.route_service.repository.RouteRepository;
 import com.example.route_service.service.RouteService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class RouteServiceImpl implements RouteService {
     @Autowired
     private RouteRepository routeRepository;
 
     @Autowired
     private RouteMapper routeMapper;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public PaginationResponseDTO<RouteResponse> getAllRoutes(int pageNo, int pageSize,String sortBy) {
@@ -92,5 +101,21 @@ public class RouteServiceImpl implements RouteService {
         else {
             routeRepository.delete(route);
         }
+    }
+
+    @Override
+    @KafkaListener(topics = "validate-route", groupId = "route-service")
+    public void validateRoute(TripValidationRequest tripValidationRequest) {
+        boolean isRouteValid = routeRepository.existsById(tripValidationRequest.getRouteId());
+
+        log.info("Route validation result: {}", isRouteValid);
+
+        TripValidationResponse tripValidationResponse = new TripValidationResponse();
+
+        tripValidationResponse.setTripId(tripValidationRequest.getTripId());
+        tripValidationResponse.setType("route");
+        tripValidationResponse.setIsValid(isRouteValid);
+
+        kafkaTemplate.send("trip-validation-response", tripValidationResponse);
     }
 }

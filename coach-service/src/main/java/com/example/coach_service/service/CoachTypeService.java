@@ -6,6 +6,7 @@ import com.example.coach_service.dto.response.CoachTypeResponse;
 import com.example.coach_service.dto.response.PaginationResponseDTO;
 import com.example.coach_service.entity.CoachType;
 import com.example.coach_service.utils.Type;
+import com.example.event.TripValidationRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

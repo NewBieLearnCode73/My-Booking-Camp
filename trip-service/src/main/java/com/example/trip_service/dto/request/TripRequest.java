@@ -40,7 +40,7 @@ public class TripRequest {
     private String arrivalTime;   //  "12:00:00"
 
     @NotEmpty(message = "Status is required")
-    @Pattern(regexp = "^(SCHEDULED|IN_PROGRESS|COMPLETED|CANCELLED)$", message = "Status should be either SCHEDULED, IN_PROGRESS, COMPLETED or CANCELLED")
+    @Pattern(regexp = "^(SCHEDULED|IN_PROGRESS|COMPLETED|CANCELLED|PENDING)$", message = "Status should be either SCHEDULED, IN_PROGRESS, COMPLETED or CANCELLED")
     private String status;
 
     @NotNull(message = "Base price is required")

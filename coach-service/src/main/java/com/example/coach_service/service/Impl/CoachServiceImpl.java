@@ -10,17 +10,23 @@ import com.example.coach_service.mapper.CoachMapper;
 import com.example.coach_service.repository.CoachRepository;
 import com.example.coach_service.repository.CoachTypeRepository;
 import com.example.coach_service.service.CoachService;
+import com.example.event.TripValidationRequest;
+import com.example.event.TripValidationResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class CoachServiceImpl implements CoachService {
 
     @Autowired
@@ -31,6 +37,9 @@ public class CoachServiceImpl implements CoachService {
 
     @Autowired
     private CoachMapper coachMapper;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public CoachResponse createCoach(CoachRequest coachRequest) {
@@ -114,5 +123,21 @@ public class CoachServiceImpl implements CoachService {
                 .pageSize(coachPage.getSize())
                 .build();
 
+    }
+
+    @Override
+    @KafkaListener(topics = "validate-coach", groupId = "coach-service")
+    public void validateRoute(TripValidationRequest tripValidationRequest) {
+        boolean isCoachValid = coachRepository.existsById(tripValidationRequest.getCoachId());
+
+        log.info("Coach validation result: {}", isCoachValid);
+
+        TripValidationResponse tripValidationResponse = new TripValidationResponse();
+
+        tripValidationResponse.setTripId(tripValidationRequest.getTripId());
+        tripValidationResponse.setType("coach");
+        tripValidationResponse.setIsValid(isCoachValid);
+
+        kafkaTemplate.send("trip-validation-response", tripValidationResponse);
     }
 }

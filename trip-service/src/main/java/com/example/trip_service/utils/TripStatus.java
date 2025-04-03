@@ -4,5 +4,6 @@ public enum TripStatus {
     SCHEDULED,
     IN_PROGRESS,
     COMPLETED,
-    CANCELLED
+    CANCELLED,
+    PENDING // When created and waiting for kafka to send the message
 }

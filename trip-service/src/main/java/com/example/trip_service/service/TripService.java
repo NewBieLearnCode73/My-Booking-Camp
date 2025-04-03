@@ -15,7 +15,7 @@ public interface TripService {
     PaginationResponseDTO<TripResponse> getTripsByDepartureDate(String departureDate, int pageNo, int pageSize, String sortBy);
     TripResponse getTripById(String id);
 
-    TripResponse createTrip(TripRequest tripRequest);
+    String createTrip(TripRequest tripRequest);
     TripResponse updateTrip(String id, TripRequest tripRequest);
     String deleteTrip(String id);
 }
