@@ -40,5 +40,8 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role = Role.CUSTOMER;
+
+    @Column(name = "company_id", nullable = true)
+    private String companyId;
 }
 

@@ -1,7 +1,5 @@
-package com.example.auth_service.handle;
+package com.example.company_service.handle;
 
-import feign.FeignException;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -37,13 +35,6 @@ public class GlobalHandleException {
     public ResponseEntity<ErrorResponse> checkValidConstraint(MethodArgumentNotValidException ex){
         String message = ex.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(", "));
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(errorResponse);
-    }
-
-    // Handle Feign Client
-    @ExceptionHandler(FeignException.class)
-    public ResponseEntity<ErrorResponse> handleFeignClientException(FeignException ex){
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(errorResponse);
     }
 }

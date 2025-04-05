@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: company-service
+
+  datasource:
+    url: ${COMPANY_SERVICE_DB_URL}
+    username: ${COMPANY_SERVICE_DB_USERNAME}
+    password: ${COMPANY_SERVICE_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+        ddl-auto: update
+    show-sql: true
+
+
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: "*"
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      group-id: company-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+server:
+  port: ${COMPANY_SERVICE_SERVER_PORT}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${REGISTRY_URL}

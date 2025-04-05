@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,5 +29,23 @@ public class UserController {
     public ResponseEntity<?> activateUser(@RequestParam String code){
         userService.activateUser(code);
         return ResponseEntity.status(HttpStatus.OK).body("User activated successfully");
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/auth/change-customer-to-staff/{id}/{companyId}")
+    public ResponseEntity<?> changeCustomerToStaff(@PathVariable String id, @PathVariable String companyId){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.changeCustomerToStaff(id, companyId));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/auth/change-customer-to-owner/{id}")
+    public ResponseEntity<?> changeCustomerToOwner(@PathVariable String id){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.changeCustomerToOwner(id));
+    }
+
+    @PermitAll
+    @GetMapping("/auth/is-owner-existed/{ownerId}")
+    public ResponseEntity<?> isOwnerExist(@PathVariable String ownerId){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.isOwnerExist(ownerId));
     }
 }
