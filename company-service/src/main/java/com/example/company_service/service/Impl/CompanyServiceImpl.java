@@ -28,8 +28,8 @@ public class CompanyServiceImpl implements CompanyService {
     private AuthClient authClient;
 
     @Override
-    public CompanyResponse createCompany(CompanyRequest companyRequest) {
-        if(!authClient.isOwnerExist(companyRequest.getOwnerId()).isExisted()){
+    public CompanyResponse createCompany(CompanyRequest companyRequest, String token) {
+        if(!authClient.isOwnerExist(companyRequest.getOwnerId(), token).isExisted()){
             throw new CustomRunTimeException("Owner with " + companyRequest.getOwnerId() + " not found");
         }
 

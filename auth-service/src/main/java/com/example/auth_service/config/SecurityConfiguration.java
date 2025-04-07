@@ -52,8 +52,7 @@ public class SecurityConfiguration {
 
 
         httpSecurity.authorizeHttpRequests(res ->{
-            res.requestMatchers("/auth/**").permitAll();
-            res.anyRequest().authenticated();
+            res.anyRequest().permitAll();
         });
 
 

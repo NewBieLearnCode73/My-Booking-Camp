@@ -1,3 +1,12 @@
 spring:
   application:
     name: booking-service
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${REGISTRY_URL}
+
+server:
+  port: ${BOOKING_SERVICE_SERVER_PORT}

@@ -25,4 +25,11 @@ public class GlobalHanldeException {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
     }
+
+    // Check ResponseStatusException
+    @ExceptionHandler(CustomResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> checkResponseStatusException(CustomResponseStatusException ex){
+        ErrorResponse errorResponse = new ErrorResponse(ex.getStatusCode().value(), ex.getReason());
+        return ResponseEntity.status(ex.getStatusCode().value()).body(errorResponse);
+    }
 }

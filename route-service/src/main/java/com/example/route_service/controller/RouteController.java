@@ -1,20 +1,24 @@
 package com.example.route_service.controller;
 
+import com.example.route_service.custom.RequireRole;
 import com.example.route_service.dto.request.RouteRequest;
 import com.example.route_service.service.RouteService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 public class RouteController {
 
     @Autowired
     private RouteService routeService;
 
     @GetMapping("/route")
+    @RequireRole("ROLE_ADMIN")
     public ResponseEntity<?> getAllRoutes(
             @RequestParam(defaultValue = "0") int pageNo,
             @RequestParam(defaultValue = "10") int pageSize,

@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-@EnableMethodSecurity
 public class AuthServiceApplication {
 
 	public static void main(String[] args) {

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface CompanyService {
-    CompanyResponse createCompany(CompanyRequest companyRequest);
+    CompanyResponse createCompany(CompanyRequest companyRequest, String token);
 
     CompanyResponse getCompanyById(String id);
 

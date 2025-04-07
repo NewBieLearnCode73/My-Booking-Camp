@@ -47,6 +47,9 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.0'
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
+	implementation("org.springframework.boot:spring-boot-starter-aop:3.4.4")
 }
 
 dependencyManagement {

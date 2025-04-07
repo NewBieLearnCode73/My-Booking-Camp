@@ -20,9 +20,46 @@ spring:
           predicates:
             - Path=/notification/**
 
+        - id: booking-service
+          uri: ${BASE_URL}:${BOOKING_SERVICE_SERVER_PORT}
+          predicates:
+            - Path=/booking/**
+
+        - id: coach-service
+          uri: ${BASE_URL}:${COACH_SERVICE_SERVER_PORT}
+          predicates:
+            - Path=/coach/**
+
+        - id: company-service
+          uri: ${BASE_URL}:${COMPANY_SERVICE_SERVER_PORT}
+          predicates:
+            - Path=/company/**
+
+        - id: driver-service
+          uri: ${BASE_URL}:${DRIVER_SERVICE_SERVER_PORT}
+          predicates:
+            - Path=/driver/**
+
+        - id: payment-service
+          uri: ${BASE_URL}:${PAYMENT_SERVICE_SERVER_PORT}
+          predicates:
+            - Path=/payment/**
+
+        - id: route-service
+          uri: ${BASE_URL}:${ROUTE_SERVICE_SERVER_PORT}
+          predicates:
+            - Path=/route/**
+
+        - id: trip-service
+          uri: ${BASE_URL}:${TRIP_SERVICE_SERVER_PORT}
+          predicates:
+            - Path=/trip/**
+
 eureka:
   client:
     serviceUrl:
       defaultZone: ${REGISTRY_URL}
+
+
 server:
   port: ${GATEWAY_SERVICE_SERVER_PORT}

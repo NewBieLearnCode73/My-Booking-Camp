@@ -75,20 +75,24 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
                 .retrieve()
                 .bodyToMono(Map.class)
                 .flatMap(req -> {
-
                     log.info("User: {} Role: {}", req.get("user_username"), req.get("user_role"));
 
-                    // Create a new request with additional headers
                     ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                             .header("X-Auth-Username", req.get("user_username").toString())
                             .header("X-Auth-Roles", req.get("user_role").toString())
                             .build();
 
-                    ServerWebExchange modifiedExchange = exchange.mutate().request(modifiedRequest).build();
+                    ServerHttpRequest finalRequest = modifiedRequest.mutate()
+                            .headers(httpHeaders -> httpHeaders.remove(HttpHeaders.AUTHORIZATION))
+                            .build();
 
+                    ServerWebExchange finalExchange = exchange.mutate()
+                            .request(finalRequest)
+                            .build();
 
-                    return chain.filter(modifiedExchange);
+                    return chain.filter(finalExchange);
                 });
+
     }
 
     @Override
