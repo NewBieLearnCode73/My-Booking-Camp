@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+    mysql:
+        image: mysql:latest
+        container_name: my_booking_camp_mysql
+        ports:
+            - "3310:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=AuthDB
+            - MYSQL_USER=spring
+            - MYSQL_PASSWORD=spring
+        restart: always
+        volumes:
+            - mysql_db:/var/lib/mysql
+
+    redis:
+        image: redis:7.2.7-alpine
+        container_name: my_booking_camp_redis
+        ports:
+            - "6379:6379"
+        restart: always
+
+    kafka:
+        image: apache/kafka:latest
+        container_name: my_booking_camp_kafka
+        ports:
+            - "9092:9092"
+        restart: always
+
+    neo4j:
+        image: neo4j:latest
+        container_name: my_booking_camp_neo4j
+        ports:
+            - "7474:7474"
+            - "7687:7687"
+        environment:
+            - NEO4J_AUTH=neo4j/12345678
+        restart: always
+
+    mongo:
+        image: mongo:latest
+        container_name: my_booking_camp_mongo
+        ports:
+            - "27020:27017"
+        restart: always
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=root
+            - MONGO_INITDB_ROOT_PASSWORD=root
+        volumes:
+            - mongo_data:/data/db
+
+volumes:
+    mysql_db:
+    mongo_data:
