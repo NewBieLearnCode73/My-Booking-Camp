@@ -31,4 +31,4 @@ eureka:
 
 
 
-apiKey: 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
+apiKey: ${NOTIFICATION_SERVICE_API_KEY_BREVO}

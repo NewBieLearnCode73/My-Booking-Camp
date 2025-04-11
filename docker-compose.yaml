@@ -51,6 +51,13 @@ services:
         volumes:
             - mongo_data:/data/db
 
+    zipkin:
+        image: openzipkin/zipkin
+        container_name: my_booking_camp_zipkin
+        ports:
+            - "9411:9411"
+        restart: always
+
 volumes:
     mysql_db:
     mongo_data:

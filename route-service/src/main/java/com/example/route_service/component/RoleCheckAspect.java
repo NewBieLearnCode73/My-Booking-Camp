@@ -2,7 +2,6 @@ package com.example.route_service.component;
 
 import com.example.route_service.custom.RequireRole;
 import com.example.route_service.handle.CustomResponseStatusException;
-import com.example.route_service.handle.CustomRunTimeException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

@@ -50,6 +50,11 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
 	implementation("org.springframework.boot:spring-boot-starter-aop:3.4.4")
+
+	// Zipkin
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 }
 
 dependencyManagement {

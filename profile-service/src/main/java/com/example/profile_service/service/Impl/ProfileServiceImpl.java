@@ -3,6 +3,7 @@ package com.example.profile_service.service.Impl;
 import com.example.profile_service.dto.request.ProfileCreationRequest;
 import com.example.profile_service.dto.response.UserProfileResponse;
 import com.example.profile_service.entity.Profile;
+import com.example.profile_service.handle.CustomRunTimeException;
 import com.example.profile_service.mapper.ProfileMapper;
 import com.example.profile_service.repository.ProfileRepository;
 import com.example.profile_service.service.ProfileService;
@@ -30,14 +31,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public UserProfileResponse findProfileByUserId(String user_id) {
-        Profile profile = profileRepository.findByUser_id(user_id).orElse(null);
+        Profile profile = profileRepository.findByUser_id(user_id).orElseThrow(() -> new CustomRunTimeException("Profile with id " + user_id + " not found"));
 
         return profileMapper.toUserProfileResponse(profile);
     }
 
     @Override
     public UserProfileResponse deleteProfileById(String id) {
-        Profile profile = profileRepository.findById(id).orElse(null);
+        Profile profile = profileRepository.findById(id).orElseThrow(() -> new CustomRunTimeException("Profile with id " + id + " not found"));
 
         profileRepository.delete(profile);
 
@@ -46,7 +47,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public UserProfileResponse updateProfileById(String id, ProfileCreationRequest request) {
-        Profile profile = profileRepository.findById(id).orElse(null);
+
+        Profile profile = profileRepository.findById(id).orElseThrow(() -> new CustomRunTimeException("Profile with id " + id + " not found"));
+
 
         profile = profileMapper.toProfile(request);
 

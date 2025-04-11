@@ -63,3 +63,8 @@ eureka:
 
 server:
   port: ${GATEWAY_SERVICE_SERVER_PORT}
+
+management:
+  tracing:
+    sampling:
+      probability: 1
