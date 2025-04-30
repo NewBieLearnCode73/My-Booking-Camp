@@ -82,12 +82,12 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
                             .header("X-Auth-Roles", req.get("user_role").toString())
                             .build();
 
-                    ServerHttpRequest finalRequest = modifiedRequest.mutate()
-                            .headers(httpHeaders -> httpHeaders.remove(HttpHeaders.AUTHORIZATION))
-                            .build();
+//                    ServerHttpRequest finalRequest = modifiedRequest.mutate()
+//                            .headers(httpHeaders -> httpHeaders.remove(HttpHeaders.AUTHORIZATION))
+//                            .build();
 
                     ServerWebExchange finalExchange = exchange.mutate()
-                            .request(finalRequest)
+                            .request(modifiedRequest)
                             .build();
 
                     return chain.filter(finalExchange);

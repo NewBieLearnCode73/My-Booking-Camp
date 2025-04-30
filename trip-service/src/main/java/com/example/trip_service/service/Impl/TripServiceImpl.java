@@ -3,6 +3,7 @@ package com.example.trip_service.service.Impl;
 import com.example.event.TripValidationRequest;
 import com.example.trip_service.dto.request.TripRequest;
 import com.example.trip_service.dto.response.PaginationResponseDTO;
+import com.example.trip_service.dto.response.TripExistResponse;
 import com.example.trip_service.dto.response.TripResponse;
 import com.example.trip_service.entity.Trip;
 import com.example.trip_service.handle.CustomRunTimeException;
@@ -123,6 +124,13 @@ public class TripServiceImpl implements TripService {
         }
 
         return tripMapper.tripToTripResponse(trip.get());
+    }
+
+    @Override
+    public TripExistResponse isTripExist(String id) {
+        boolean trip = tripRepository.existsById(id);
+
+        return TripExistResponse.builder().existed(trip).message("Trip with id " + id + (trip ? " exists" : " does not exist")).build();
     }
 
     @Override

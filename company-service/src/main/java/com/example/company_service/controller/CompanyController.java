@@ -23,10 +23,6 @@ public class CompanyController {
     public ResponseEntity<?> createCompany(@Valid @RequestBody CompanyRequest companyRequest, @RequestHeader ("Authorization") String token) {
         log.info("Received token: {}", token);
 
-        if(token == null || token.isEmpty()) {
-            throw new AuthorizationException("Authorization token is missing");
-        }
-
         return ResponseEntity.status(HttpStatus.CREATED).body(companyService.createCompany(companyRequest, token));
     }
 

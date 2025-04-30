@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface RegisterMapper {
+public interface  RegisterMapper {
     @Mapping(target = "activation" , constant = "false")
     @Mapping(target = "role" , constant = "CUSTOMER")
     User toUser(RegisterUserRequest registerUserRequest);

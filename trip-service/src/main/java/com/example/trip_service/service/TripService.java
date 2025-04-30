@@ -2,6 +2,7 @@ package com.example.trip_service.service;
 
 import com.example.trip_service.dto.request.TripRequest;
 import com.example.trip_service.dto.response.PaginationResponseDTO;
+import com.example.trip_service.dto.response.TripExistResponse;
 import com.example.trip_service.dto.response.TripResponse;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ public interface TripService {
     PaginationResponseDTO<TripResponse> getTripsByDepartureDateTime(String departureDate, String from, String to, int pageNo, int pageSize, String sortBy);
     PaginationResponseDTO<TripResponse> getTripsByDepartureDate(String departureDate, int pageNo, int pageSize, String sortBy);
     TripResponse getTripById(String id);
+    TripExistResponse isTripExist(String id);
 
     String createTrip(TripRequest tripRequest);
     TripResponse updateTrip(String id, TripRequest tripRequest);

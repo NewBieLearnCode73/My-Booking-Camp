@@ -49,6 +49,11 @@ public class TripController {
         return ResponseEntity.status(HttpStatus.OK.value()).body(tripService.getTripById(id));
     }
 
+    @GetMapping("trip/is-existed-with-id/{id}")
+    public ResponseEntity<?> isTripExist(@PathVariable String id) {
+        return ResponseEntity.status(HttpStatus.OK.value()).body(tripService.isTripExist(id));
+    }
+
     @PostMapping("/trip")
     public ResponseEntity<?> createTrip(@RequestBody @Valid TripRequest tripRequest) {
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(tripService.createTrip(tripRequest));

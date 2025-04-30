@@ -16,4 +16,5 @@ public interface TripRepository extends MongoRepository<Trip, String> {
     @Query("{ 'departureDate' : ?0 , 'departureTime' : { $gte: ?1, $lte: ?2 } }")
     Page<Trip> findByDepartureDateAndTimeRange(LocalDate departureDate, LocalTime from, LocalTime to, Pageable pageable);
     Page<Trip> findByDepartureDate(LocalDate departureDate, Pageable pageable);
+    boolean existsById(String id);
 }
