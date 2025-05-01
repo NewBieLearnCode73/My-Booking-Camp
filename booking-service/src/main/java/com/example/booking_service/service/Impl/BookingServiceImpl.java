@@ -124,7 +124,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse getBookingById(String id) {
-        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new RuntimeException("Booking with id "+ id +" not found"));
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new CustomRunTimeException("Booking with id "+ id +" not found"));
         return bookingMapper.toBookingResponse(booking);
     }
 
@@ -166,7 +166,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse updateBookingStatus(BookingUpdateStatusRequest bookingUpdateStatusRequest, String userUsername) {
-        Booking booking = bookingRepository.findById(bookingUpdateStatusRequest.getBookingId()).orElseThrow(() -> new RuntimeException("Booking with id " + bookingUpdateStatusRequest.getBookingId()  + " not found"));
+        Booking booking = bookingRepository.findById(bookingUpdateStatusRequest.getBookingId()).orElseThrow(() -> new CustomRunTimeException("Booking with id " + bookingUpdateStatusRequest.getBookingId()  + " not found"));
 
         // Save log to history
         bookingHistoryRepository.save(
@@ -188,17 +188,24 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse updateBookingSeats(BookingSeatsUpdateRequest bookingSeatsUpdateRequest) {
-        Booking booking = bookingRepository.findById(bookingSeatsUpdateRequest.getBookingId()).orElseThrow(() -> new RuntimeException("Booking with id " + bookingSeatsUpdateRequest.getBookingId()  + " not found"));
+        Booking booking = bookingRepository.findById(bookingSeatsUpdateRequest.getBookingId())
+                .orElseThrow(() -> new CustomRunTimeException("Booking with id " + bookingSeatsUpdateRequest.getBookingId()  + " not found"));
 
         List<Booking> existingBooking = bookingRepository.findAllByTripId(booking.getTripId());
 
+        existingBooking.removeIf(x -> x.getId().equals(bookingSeatsUpdateRequest.getBookingId()));
+
+        List<String> newSeats = bookingSeatsUpdateRequest.getBookedSeats();
         existingBooking.forEach(x -> {
-            x.getBookedSeats().stream().filter(seat -> booking.getBookedSeats().contains(seat)).findFirst().ifPresent(seat -> {
-                throw new CustomRunTimeException("Seat " + seat + " already booked by booking id " + x.getId());
-            });
+            x.getBookedSeats().stream()
+                    .filter(newSeats::contains)
+                    .findFirst()
+                    .ifPresent(seat -> {
+                        throw new CustomRunTimeException("Seat " + seat + " already booked by booking id " + x.getId());
+                    });
         });
 
-        booking.setBookedSeats(bookingSeatsUpdateRequest.getBookedSeats());
+        booking.setBookedSeats(newSeats);
 
         Booking updatedBooking = bookingRepository.save(booking);
 
