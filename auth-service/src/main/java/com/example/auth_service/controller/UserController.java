@@ -43,4 +43,9 @@ public class UserController {
     public ResponseEntity<?> isOwnerExist(@PathVariable String ownerId){
         return ResponseEntity.status(HttpStatus.OK).body(userService.isOwnerExist(ownerId));
     }
+
+    @GetMapping("/auth/get-basic-info-by-username/{username}")
+    public ResponseEntity<?> getBasicInfoByUsername(@PathVariable String username){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getBasicInfoByUsername(username));
+    }
 }

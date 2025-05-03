@@ -4,6 +4,7 @@ import com.example.auth_service.dto.request.RegisterUserRequest;
 import com.example.auth_service.dto.response.CompanyExistedResponse;
 import com.example.auth_service.dto.response.OwnerExistedResponse;
 import com.example.auth_service.dto.response.RegisterUserResponse;
+import com.example.auth_service.dto.response.UserProfileResponse;
 import com.example.auth_service.entity.User;
 import com.example.auth_service.handle.CustomRunTimeException;
 import com.example.auth_service.mapper.ProfileMapper;
@@ -212,5 +213,22 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
             return "User with id "+ id  +" has been changed to owner!";
         }
+    }
+
+    @Override
+    public UserProfileResponse getBasicInfoByUsername(String username) {
+        String userId = this.getUserIdByUsername(username);
+
+        if (userId == null || userId.isEmpty()) {
+            throw new CustomRunTimeException("User not found!");
+        }
+
+        UserProfileResponse userProfileResponse = profileClient.findProfileByUserId(userId);
+
+        if (userProfileResponse == null) {
+            throw new CustomRunTimeException("User profile not found!");
+        }
+
+        return userProfileResponse;
     }
 }

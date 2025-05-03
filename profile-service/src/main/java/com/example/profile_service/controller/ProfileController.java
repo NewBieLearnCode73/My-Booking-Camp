@@ -15,7 +15,7 @@ public class ProfileController {
 
 
     @GetMapping("/profile/users/{user_id}")
-    public ResponseEntity<?> findProfileByUserId(@PathVariable String user_id, @RequestHeader("X-Auth-Username") String username){
+    public ResponseEntity<?> findProfileByUserId(@PathVariable String user_id){
         return ResponseEntity.ok().body(profileService.findProfileByUserId(user_id));
     }
 

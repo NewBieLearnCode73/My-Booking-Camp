@@ -2,6 +2,15 @@ spring:
   application:
     name: payment-service
 
+  datasource:
+    url: ${PAYMENT_SERVICE_DB_URL}
+    username: ${PAYMENT_SERVICE_DB_USERNAME}
+    password: ${PAYMENT_SERVICE_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 eureka:
   client:

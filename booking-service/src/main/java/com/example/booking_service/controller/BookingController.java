@@ -1,9 +1,6 @@
 package com.example.booking_service.controller;
 
-import com.example.booking_service.dto.request.BookingRequest;
-import com.example.booking_service.dto.request.BookingSeatsUpdateRequest;
-import com.example.booking_service.dto.request.BookingTripAndStatusRequest;
-import com.example.booking_service.dto.request.BookingUpdateStatusRequest;
+import com.example.booking_service.dto.request.*;
 import com.example.booking_service.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,4 +81,18 @@ public class BookingController {
         return ResponseEntity.status(HttpStatus.OK.value()).body(bookingService.updateBookingSeats(bookingSeatsUpdateRequest));
     }
 
+    @GetMapping("/booking/is-existed-with-id/{id}")
+    public ResponseEntity<?> isBookingExist(@PathVariable String id) {
+        return ResponseEntity.status(HttpStatus.OK.value()).body(bookingService.isBookingExist(id));
+    }
+
+    @GetMapping("/booking/get-all-seats/{bookingId}")
+    public ResponseEntity<?> getAllSeats(@PathVariable String bookingId) {
+        return ResponseEntity.status(HttpStatus.OK.value()).body(bookingService.getAllSeats(bookingId));
+    }
+
+    @PutMapping("/booking/add-discount")
+    public ResponseEntity<?> addDiscount(@RequestBody BookingSeatDiscountRequest bookingSeatDiscountRequest) {
+        return ResponseEntity.status(HttpStatus.OK.value()).body(bookingService.addDiscount(bookingSeatDiscountRequest));
+    }
 }

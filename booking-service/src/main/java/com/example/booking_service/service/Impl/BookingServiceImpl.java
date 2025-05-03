@@ -1,20 +1,19 @@
 package com.example.booking_service.service.Impl;
 
-import com.example.booking_service.dto.request.BookingRequest;
-import com.example.booking_service.dto.request.BookingSeatsUpdateRequest;
-import com.example.booking_service.dto.request.BookingTripAndStatusRequest;
-import com.example.booking_service.dto.request.BookingUpdateStatusRequest;
-import com.example.booking_service.dto.response.BookingResponse;
-import com.example.booking_service.dto.response.PaginationResponseDTO;
+import com.example.booking_service.dto.request.*;
+import com.example.booking_service.dto.response.*;
 import com.example.booking_service.entity.Booking;
+import com.example.booking_service.entity.BookingSeatDetail;
 import com.example.booking_service.entity.BookingStatusHistory;
 import com.example.booking_service.handle.CustomRunTimeException;
 import com.example.booking_service.mapper.BookingMapper;
 import com.example.booking_service.repository.BookingHistoryRepository;
 import com.example.booking_service.repository.BookingRepository;
+import com.example.booking_service.repository.BookingSeatDetailRepository;
 import com.example.booking_service.repository.httpclient.TripClient;
 import com.example.booking_service.service.BookingService;
 import com.example.booking_service.utils.Status;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,15 +23,20 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class BookingServiceImpl implements BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
     @Autowired
     private BookingHistoryRepository bookingHistoryRepository;
+
+    @Autowired
+    private BookingSeatDetailRepository bookingSeatDetailRepository;
 
     @Autowired
     private TripClient tripClient;
@@ -143,6 +147,8 @@ public class BookingServiceImpl implements BookingService {
             booking.setCreateByEmployeeUsername(userUsername);
         }
 
+        TripResponse tripResponse = tripClient.getTripById(booking.getTripId());
+
         if(!tripClient.isTripExist(booking.getTripId()).isExisted()){
             throw new CustomRunTimeException("Trip with id "+ booking.getTripId() +" not found!");
         }
@@ -161,6 +167,22 @@ public class BookingServiceImpl implements BookingService {
        booking.setCreatedTime(LocalTime.now());
 
         Booking savedBooking = bookingRepository.save(booking);
+
+
+        List<BookingSeatDetail> seatDetails = new ArrayList<>();
+
+        for (String seat : savedBooking.getBookedSeats()) {
+            BookingSeatDetail detail = BookingSeatDetail.builder()
+                    .seatCode(seat)
+                    .bookingId(savedBooking.getId())
+                    .price(tripResponse.getBasePrice())
+                    .build();
+
+            seatDetails.add(detail);
+        }
+
+        bookingSeatDetailRepository.saveAll(seatDetails);
+
         return bookingMapper.toBookingResponse(savedBooking);
     }
 
@@ -209,6 +231,93 @@ public class BookingServiceImpl implements BookingService {
 
         Booking updatedBooking = bookingRepository.save(booking);
 
+        Double basePrice = tripClient.getTripById(booking.getTripId()).getBasePrice();
+
+        // Cập nhật bảng phụ booking_seat_detail
+        bookingSeatDetailRepository.deleteByBookingId(booking.getId());
+        List<BookingSeatDetail> newSeatDetails = newSeats.stream()
+                .map(seat -> BookingSeatDetail.builder()
+                        .seatCode(seat)
+                        .bookingId(updatedBooking.getId())
+                        .price(basePrice)
+                        .build())
+                .toList();
+
+        bookingSeatDetailRepository.saveAll(newSeatDetails);
         return bookingMapper.toBookingResponse(updatedBooking);
+    }
+
+    @Override
+    public BookingExistedResponse isBookingExist(String id) {
+        BookingExistedResponse bookingExistedResponse = new BookingExistedResponse();
+        bookingExistedResponse.setExisted(bookingRepository.existsById(id));
+        return bookingExistedResponse;
+    }
+
+    @Override
+    public BookingSeatResponse getAllSeats(String bookingId) {
+        List<BookingSeatDetail> bookingSeatDetail = bookingSeatDetailRepository.findAllByBookingId(bookingId);
+
+        if (bookingSeatDetail.isEmpty()) {
+            throw new CustomRunTimeException("Booking with id " + bookingId + " not found");
+        }
+
+        List<SeatWithDiscountResponse> seats = new ArrayList<>();
+
+        for (BookingSeatDetail seatDetail : bookingSeatDetail) {
+            seats.add(SeatWithDiscountResponse.builder()
+                    .seatCode(seatDetail.getSeatCode())
+                    .discountPercent(seatDetail.getDiscountPercent())
+                    .price(seatDetail.getPrice())
+                    .build());
+        }
+
+        return BookingSeatResponse.builder()
+                .bookingId(bookingId)
+                .seats(seats).build();
+    }
+
+    @Override
+    public BookingSeatDiscountResponse addDiscount(BookingSeatDiscountRequest bookingSeatDiscountRequest) {
+        Booking booking = bookingRepository.findById(bookingSeatDiscountRequest.getBookingId())
+                .orElseThrow(() -> new CustomRunTimeException("Booking with id " + bookingSeatDiscountRequest.getBookingId() + " not found"));
+
+        List<BookingSeatDetail> bookingSeatDetails = bookingSeatDetailRepository.findAllByBookingId(booking.getId());
+
+        if (bookingSeatDetails.isEmpty()) {
+            throw new CustomRunTimeException("Booking with id " + booking.getId() + " not found");
+        }
+
+        List<BookingSeatDetail> seatDetails = new ArrayList<>();
+
+        bookingSeatDiscountRequest.getSeats().forEach(
+                seat -> {
+                    String seatCode = seat.getSeatCode();
+                    if(!booking.getBookedSeats().contains(seatCode)){
+                        throw new CustomRunTimeException("Seat with code " + seatCode + " not found in booking");
+                    }
+                    BookingSeatDetail seatDetail = bookingSeatDetails.stream().filter(detail -> detail.getSeatCode().equals(seatCode))
+                            .findFirst()
+                            .orElseThrow(() -> new CustomRunTimeException("Seat with code " + seatCode + " not found"));
+                    seatDetail.setDiscountPercent(seat.getDiscountPercent());
+
+                    seatDetails.add(seatDetail);
+                }
+        );
+
+        bookingSeatDetailRepository.saveAll(seatDetails);
+
+
+        List<BookingSeatDetail> updatedSeatDetails = bookingSeatDetailRepository.findAllByBookingId(booking.getId());
+
+        List<SeatWithDiscountResponse> seats = updatedSeatDetails.stream().map(seatDetail -> SeatWithDiscountResponse.builder()
+                .seatCode(seatDetail.getSeatCode())
+                .discountPercent(seatDetail.getDiscountPercent())
+                .build()).toList();
+
+        return BookingSeatDiscountResponse.builder()
+                .bookingId(booking.getId())
+                .seats(seats)
+                .build();
     }
 }

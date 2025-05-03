@@ -2,9 +2,9 @@ package com.example.auth_service.service;
 
 
 import com.example.auth_service.dto.request.RegisterUserRequest;
-import com.example.auth_service.dto.response.CompanyExistedResponse;
 import com.example.auth_service.dto.response.OwnerExistedResponse;
 import com.example.auth_service.dto.response.RegisterUserResponse;
+import com.example.auth_service.dto.response.UserProfileResponse;
 import com.example.auth_service.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +19,5 @@ public interface UserService {
      String changeCustomerToStaff(String id, String companyId);
      OwnerExistedResponse isOwnerExist(String ownerId);
      String changeCustomerToOwner(String id);
+     UserProfileResponse getBasicInfoByUsername(String username);
 }

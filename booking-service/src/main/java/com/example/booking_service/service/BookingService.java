@@ -1,11 +1,7 @@
 package com.example.booking_service.service;
 
-import com.example.booking_service.dto.request.BookingRequest;
-import com.example.booking_service.dto.request.BookingSeatsUpdateRequest;
-import com.example.booking_service.dto.request.BookingTripAndStatusRequest;
-import com.example.booking_service.dto.request.BookingUpdateStatusRequest;
-import com.example.booking_service.dto.response.BookingResponse;
-import com.example.booking_service.dto.response.PaginationResponseDTO;
+import com.example.booking_service.dto.request.*;
+import com.example.booking_service.dto.response.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,4 +15,9 @@ public interface BookingService {
     BookingResponse createBooking(BookingRequest bookingRequest, String userUsername, String userRole);
     BookingResponse updateBookingStatus(BookingUpdateStatusRequest bookingUpdateStatusRequest, String userUsername);
     BookingResponse updateBookingSeats(BookingSeatsUpdateRequest bookingSeatsUpdateRequest);
+
+    BookingExistedResponse isBookingExist(String id);
+    BookingSeatResponse getAllSeats(String bookingId);
+
+    BookingSeatDiscountResponse addDiscount(BookingSeatDiscountRequest bookingSeatDiscountRequest);
 }
