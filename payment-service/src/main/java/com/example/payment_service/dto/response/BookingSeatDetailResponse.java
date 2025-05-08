@@ -5,15 +5,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PaymentResponse {
+public class BookingSeatDetailResponse {
     private String id;
+
     private String bookingId;
-    private String staffUsername;
-    private double totalAmount;
-    private String paymentDate;
-    private String paymentTime;
+
+    private String seatCode;
+
+    private double discountPercent = 0.0;
+
+    private double price;
 }
+
+

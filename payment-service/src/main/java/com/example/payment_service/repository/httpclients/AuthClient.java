@@ -11,4 +11,9 @@ public interface AuthClient {
             consumes = "application/json",
             produces = "application/json")
     UserProfileResponse findProfileByUsername(@PathVariable String username);
+
+    @GetMapping(value = "/get-username-by-id/{id}",
+            consumes = "application/json",
+            produces = "application/json")
+    String getUsernameById(@PathVariable String id);
 }

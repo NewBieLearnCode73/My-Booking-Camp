@@ -1,6 +1,6 @@
 package com.example.payment_service.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
+import com.example.payment_service.utils.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PaymentCreateRequest {
-    @NotEmpty(message = "Please provide a booking id")
+public class BookingStatusRequest {
     private String bookingId;
+    private Status status;
 }

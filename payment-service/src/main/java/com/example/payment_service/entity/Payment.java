@@ -23,14 +23,8 @@ public class Payment {
     @Column(name = "booking_id", nullable = false)
     private String bookingId;
 
-    @Column(name = "trip_id", nullable = false)
-    private String tripId;
-
-    @Column(name = "staff_id", nullable = false)
-    private String staffId;
-
-    @Column(name = "discount_percent", nullable = false)
-    private double discountPercent = 0.0;
+    @Column(name = "staff_username", nullable = false)
+    private String staffUsername;
 
     @Column(name = "total_amount", nullable = false)
     private double totalAmount;

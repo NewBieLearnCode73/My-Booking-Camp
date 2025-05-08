@@ -48,4 +48,9 @@ public class UserController {
     public ResponseEntity<?> getBasicInfoByUsername(@PathVariable String username){
         return ResponseEntity.status(HttpStatus.OK).body(userService.getBasicInfoByUsername(username));
     }
+
+    @GetMapping("/auth/get-username-by-id/{id}")
+    public ResponseEntity<?> getUsernameById(@PathVariable String id){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsernameById(id));
+    }
 }

@@ -231,4 +231,14 @@ public class UserServiceImpl implements UserService {
 
         return userProfileResponse;
     }
+
+    @Override
+    public String getUsernameById(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomRunTimeException("User with id "+ id  +" not found!"));
+        if (user.getUsername() == null) {
+            throw new CustomRunTimeException("Username not found!");
+        }
+        return user.getUsername();
+    }
 }

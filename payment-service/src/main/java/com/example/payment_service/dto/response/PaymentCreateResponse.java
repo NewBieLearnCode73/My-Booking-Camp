@@ -14,10 +14,8 @@ public class PaymentCreateResponse {
     private String id;
     private String bookingId;
     private String tripId;
-    private double discountPercent;
     private double totalAmount;
     private String status;
     private String paymentMethod;
     private String createdAt;
-    private String updatedAt;
 }

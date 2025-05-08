@@ -20,4 +20,5 @@ public interface UserService {
      OwnerExistedResponse isOwnerExist(String ownerId);
      String changeCustomerToOwner(String id);
      UserProfileResponse getBasicInfoByUsername(String username);
+     String getUsernameById(String id);
 }
