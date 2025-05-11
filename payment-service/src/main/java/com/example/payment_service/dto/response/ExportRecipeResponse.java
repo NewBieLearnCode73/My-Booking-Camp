@@ -13,10 +13,11 @@ public class ExportRecipeResponse {
     private String id;
     private String bookingId;
     private String routeName;
-    private String staffName;
+    private String staffUsername;
     private String phoneNumber;
+    private String seatNumber;
     private double discountPercent;
     private double totalAmount;
-    private String paymentDate;
-    private String paymentTime;
+    private String exportDate;
+    private String exportTime;
 }

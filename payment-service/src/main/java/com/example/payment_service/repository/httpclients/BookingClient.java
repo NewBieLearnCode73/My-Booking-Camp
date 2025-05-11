@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(name = "booking-service", url = "http://localhost:8099/booking")
 public interface BookingClient
 {
-    @GetMapping(value = "/get-booking-by-id/{id}",
+    @GetMapping(value = "/{id}",
             consumes = "application/json",
             produces = "application/json")
     BookingResponse getBookingById(@PathVariable String id);

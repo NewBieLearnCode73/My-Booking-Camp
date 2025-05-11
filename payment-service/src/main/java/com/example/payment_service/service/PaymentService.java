@@ -6,10 +6,12 @@ import com.example.payment_service.dto.response.PaymentResponse;
 import com.example.payment_service.dto.response.TripAmountCalculatorResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface PaymentService {
     PaymentResponse createPayment(PaymentCreateRequest paymentCreateRequest, String username);
     PaymentResponse getPaymentById(String id);
-    ExportRecipeResponse getExportRecipeByBookingId(String bookingId);
+    List<ExportRecipeResponse> getExportRecipeByBookingId(String bookingId, String staffUsername);
     TripAmountCalculatorResponse calculateTripAmount(String tripId);
 }

@@ -18,5 +18,19 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.createPayment(paymentCreateRequest, username));
     }
 
+    @GetMapping("/payment/{id}")
+    ResponseEntity<?> getPaymentById(@PathVariable String id) {
+        return ResponseEntity.ok(paymentService.getPaymentById(id));
+    }
+
+    @GetMapping("/payment/export-recipe/{bookingId}")
+    ResponseEntity<?> getExportRecipeByBookingId(@PathVariable String bookingId, @RequestHeader("X-Auth-Username") String staffUsername) {
+        return ResponseEntity.ok(paymentService.getExportRecipeByBookingId(bookingId, staffUsername));
+    }
+
+    @GetMapping("/payment/calculate-trip-amount/{tripId}")
+    ResponseEntity<?> calculateTripAmount(@PathVariable String tripId) {
+        return ResponseEntity.ok(paymentService.calculateTripAmount(tripId));
+    }
 
 }

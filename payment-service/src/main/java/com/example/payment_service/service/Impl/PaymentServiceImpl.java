@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,19 +25,16 @@ public class PaymentServiceImpl implements PaymentService {
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private AuthClient authClient;
-
-    @Autowired
     private BookingClient bookingClient;
 
     @Autowired
     private BookingSeatDetailClient bookingSeatDetailClient;
 
     @Autowired
-    private ProfileClient profileClient;
+    private TripClient tripClient;
 
     @Autowired
-    private TripClient tripClient;
+    private RouteClient routeClient;
 
     @Autowired
     private PaymentMapper paymentMapper;
@@ -86,12 +84,89 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ExportRecipeResponse getExportRecipeByBookingId(String bookingId) {
-        return null;
+    public List<ExportRecipeResponse> getExportRecipeByBookingId(String bookingId, String staffUsername) {
+        if (!bookingClient.isBookingExisted(bookingId).isExisted()) {
+            throw new CustomRunTimeException("Booking with id " + bookingId + " not found!");
+        }
+
+        BookingResponse bookingResponse = bookingClient.getBookingById(bookingId);
+        if (bookingResponse == null) {
+            throw new CustomRunTimeException("Failed to retrieve booking details");
+        }
+
+        TripResponse tripResponse = tripClient.getTripById(bookingResponse.getTripId());
+        if (tripResponse == null) {
+            throw new CustomRunTimeException("Trip not found for booking " + bookingId);
+        }
+
+        RouteResponse routeResponse = routeClient.getRouteById(tripResponse.getRouteId());
+        if (routeResponse == null) {
+            throw new CustomRunTimeException("Route not found for trip " + tripResponse.getId());
+        }
+
+        List<BookingSeatDetailResponse> seatDetails = bookingSeatDetailClient.getAllBookingSeatDetailsByBookingId(bookingId);
+        if (seatDetails == null || seatDetails.isEmpty()) {
+            throw new CustomRunTimeException("No seat details found for booking " + bookingId);
+        }
+
+        String routeName = routeResponse.getStartLocation() + " - " + routeResponse.getEndLocation();
+        String currentDate = LocalDate.now().toString();
+        String currentTime = LocalTime.now().toString();
+
+        List<ExportRecipeResponse> exportRecipeResponses = new ArrayList<>();
+        for (BookingSeatDetailResponse seat : seatDetails) {
+            double discountedAmount = calculateDiscountedAmount(seat.getPrice(), seat.getDiscountPercent());
+
+            ExportRecipeResponse exportRecipe = ExportRecipeResponse.builder()
+                    .id(seat.getId())
+                    .bookingId(bookingId)
+                    .routeName(routeName)
+                    .staffUsername(staffUsername)
+                    .phoneNumber(bookingResponse.getPhoneNumber())
+                    .seatNumber(seat.getSeatCode())
+                    .discountPercent(seat.getDiscountPercent())
+                    .totalAmount(discountedAmount)
+                    .exportDate(currentDate)
+                    .exportTime(currentTime)
+                    .build();
+
+            exportRecipeResponses.add(exportRecipe);
+        }
+
+        return exportRecipeResponses;
+    }
+
+    private double calculateDiscountedAmount(double price, double discountPercent) {
+        return price * (1 - discountPercent / 100);
     }
 
     @Override
     public TripAmountCalculatorResponse calculateTripAmount(String tripId) {
+        if (!tripClient.isTripExisted(tripId).isExisted()) {
+            throw new CustomRunTimeException("Trip with id " + tripId + " not found!");
+        }
 
+        TripResponse tripResponse = tripClient.getTripById(tripId);
+        if (tripResponse == null) {
+            throw new CustomRunTimeException("Failed to retrieve trip details");
+        }
+
+        RouteResponse routeResponse = routeClient.getRouteById(tripResponse.getRouteId());
+        if (routeResponse == null) {
+            throw new CustomRunTimeException("Route not found for trip " + tripId);
+        }
+
+        double totalAmount = 0;
+        List<BookingSeatDetailResponse> seatDetails = bookingSeatDetailClient.getAllBookingSeatDetailsByBookingId(tripId);
+        if (seatDetails != null && !seatDetails.isEmpty()) {
+            for (BookingSeatDetailResponse seat : seatDetails) {
+                totalAmount += calculateDiscountedAmount(seat.getPrice(), seat.getDiscountPercent());
+            }
+        }
+
+        return TripAmountCalculatorResponse.builder()
+                .tripId(tripId)
+                .totalAmount(totalAmount)
+                .build();
     }
 }
