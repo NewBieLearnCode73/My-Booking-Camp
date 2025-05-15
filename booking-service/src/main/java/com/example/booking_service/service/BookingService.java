@@ -18,6 +18,7 @@ public interface BookingService {
 
     BookingExistedResponse isBookingExist(String id);
     BookingSeatResponse getAllSeats(String bookingId);
+    BookingSeatBookedResponse getAllSeatWasBookedByTripId(String tripId);
 
     BookingSeatDiscountResponse addDiscount(BookingSeatDiscountRequest bookingSeatDiscountRequest);
 }

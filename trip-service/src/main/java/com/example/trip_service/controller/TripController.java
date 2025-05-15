@@ -1,5 +1,6 @@
 package com.example.trip_service.controller;
 
+import com.example.trip_service.custom.RequireRole;
 import com.example.trip_service.dto.request.TripRequest;
 import com.example.trip_service.service.TripService;
 import jakarta.validation.Valid;
@@ -49,21 +50,25 @@ public class TripController {
         return ResponseEntity.status(HttpStatus.OK.value()).body(tripService.getTripById(id));
     }
 
+    @RequireRole({"ROLE_MASTER","ROLE_ADMIN", "ROLE_OWNER", "ROLE_STAFF"})
     @GetMapping("trip/is-existed-with-id/{id}")
     public ResponseEntity<?> isTripExist(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK.value()).body(tripService.isTripExist(id));
     }
 
+    @RequireRole({"ROLE_MASTER","ROLE_ADMIN", "ROLE_OWNER"})
     @PostMapping("/trip")
     public ResponseEntity<?> createTrip(@RequestBody @Valid TripRequest tripRequest) {
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(tripService.createTrip(tripRequest));
     }
 
+    @RequireRole({"ROLE_MASTER","ROLE_ADMIN", "ROLE_OWNER"})
     @PutMapping("/trip/{id}")
     public ResponseEntity<?> updateTrip(@PathVariable String id, @RequestBody @Valid TripRequest tripRequest) {
         return ResponseEntity.status(HttpStatus.OK.value()).body(tripService.updateTrip(id, tripRequest));
     }
 
+    @RequireRole({"ROLE_MASTER","ROLE_ADMIN", "ROLE_OWNER"})
     @DeleteMapping("/trip/{id}")
     public ResponseEntity<?> deleteTrip(@PathVariable String id) {
         return ResponseEntity.status(HttpStatus.OK.value()).body(tripService.deleteTrip(id));

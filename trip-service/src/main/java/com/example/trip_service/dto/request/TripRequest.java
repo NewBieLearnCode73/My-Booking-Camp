@@ -23,6 +23,9 @@ public class TripRequest {
     @NotEmpty(message = "Driver ID is required")
     private String driverId;
 
+    @NotEmpty(message = "Company ID is required")
+    private String companyId;
+
     @NotEmpty(message = "Departure date is required")
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Departure date should be in the format yyyy-MM-dd")
     private String departureDate; // "2025-03-30"
@@ -46,4 +49,3 @@ public class TripRequest {
     @NotNull(message = "Base price is required")
     private Double basePrice;
 }
-

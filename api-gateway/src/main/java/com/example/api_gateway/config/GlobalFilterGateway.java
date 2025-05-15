@@ -1,7 +1,10 @@
 package com.example.api_gateway.config;
 
+import com.example.api_gateway.handle.CustomRunTimeException;
+import com.example.api_gateway.utils.EndpointFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.spectator.impl.PatternExpr;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -9,9 +12,12 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -20,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @Slf4j
@@ -28,21 +35,30 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    private final List<String> allowedUrls = Arrays.asList(
-            "/auth/login",
-            "/auth/register",
-            "/auth/refresh-token",
-            "/auth/validate-token",
-            "/auth/activate"
-    );
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String path = exchange.getRequest().getPath().toString();
+        log.info(exchange.getRequest().getPath().toString());
 
-        if (allowedUrls.contains(path)) {
-            return chain.filter(exchange); // next filter
+        String method = exchange.getRequest().getMethod().toString();
+        String path = exchange.getRequest().getPath().toString();
+        String query = exchange.getRequest().getQueryParams()
+                .entrySet()
+                .stream()
+                .flatMap(entry -> entry.getValue().stream().map(value -> entry.getKey() + "=" + value))
+                .collect(Collectors.joining("&"));
+
+        String fullPath = query.isEmpty() ? path : path + "?" + query;
+
+        if(method.equals(HttpMethod.GET.toString())) {
+            if (EndpointFilter.isPublicEndpoint(fullPath)) {
+                return chain.filter(exchange);
+            }
+        } else if (method.equals(HttpMethod.POST.toString())) {
+            if (EndpointFilter.isPublicPostEndpoint(fullPath)) {
+                return chain.filter(exchange);
+            }
         }
+
 
         // Get request from server
         ServerHttpRequest request = exchange.getRequest();
@@ -73,6 +89,12 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
                 .uri("http://localhost:8080/auth/validate-token")
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
                 .retrieve()
+                .onStatus(
+                        HttpStatusCode.valueOf(400)::equals,
+                        response -> {
+                            return Mono.error(new RuntimeException("Something went wrong with the token. Please try again"));
+                        }
+                )
                 .bodyToMono(Map.class)
                 .flatMap(req -> {
                     log.info("User: {} Role: {}", req.get("user_username"), req.get("user_role"));
@@ -82,9 +104,7 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
                             .header("X-Auth-Roles", req.get("user_role").toString())
                             .build();
 
-//                    ServerHttpRequest finalRequest = modifiedRequest.mutate()
-//                            .headers(httpHeaders -> httpHeaders.remove(HttpHeaders.AUTHORIZATION))
-//                            .build();
+
 
                     ServerWebExchange finalExchange = exchange.mutate()
                             .request(modifiedRequest)

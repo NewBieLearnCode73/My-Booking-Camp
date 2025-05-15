@@ -14,6 +14,7 @@ public class TripResponse {
         private String routeId;
         private String coachId;
         private String driverId;
+        private String companyId;
         private String departureDate;
         private String departureTime;
         private String arrivalDate;

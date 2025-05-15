@@ -1,12 +1,13 @@
 package com.example.payment_service.repository.httpclients;
 
+import com.example.payment_service.config.FeignClientConfig;
 import com.example.payment_service.dto.request.BookingStatusRequest;
 import com.example.payment_service.dto.response.BookingExistedResponse;
 import com.example.payment_service.dto.response.BookingResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "booking-service", url = "http://localhost:8099/booking")
+@FeignClient(name = "booking-service", url = "http://localhost:8099/booking", configuration = FeignClientConfig.class)
 public interface BookingClient
 {
     @GetMapping(value = "/{id}",

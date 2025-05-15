@@ -278,6 +278,26 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public BookingSeatBookedResponse getAllSeatWasBookedByTripId(String tripId) {
+        if (!bookingRepository.existsByTripId(tripId)) {
+            throw new CustomRunTimeException("Trip with id " + tripId + " not found");
+        }
+
+        List<Booking> bookings = bookingRepository.findAllByTripId(tripId);
+
+        List<String> bookedSeats = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+            bookedSeats.addAll(booking.getBookedSeats());
+        }
+
+        return BookingSeatBookedResponse.builder()
+                .tripId(tripId)
+                .bookedSeats(bookedSeats)
+                .build();
+    }
+
+    @Override
     public BookingSeatDiscountResponse addDiscount(BookingSeatDiscountRequest bookingSeatDiscountRequest) {
         Booking booking = bookingRepository.findById(bookingSeatDiscountRequest.getBookingId())
                 .orElseThrow(() -> new CustomRunTimeException("Booking with id " + bookingSeatDiscountRequest.getBookingId() + " not found"));

@@ -37,6 +37,26 @@ public class SecurityController {
     private MyJwtRedisService myJwtRedisService;
 
     @PermitAll
+    @GetMapping("/auth/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader String Authorization){
+        String token = Authorization.substring(7);
+        if(jwtUtils.isTokenValid(token)){
+            Map<String, String> response = new HashMap<>();
+
+            response.put("user_role", jwtUtils.getRole(token));
+            response.put("user_username", jwtUtils.extractUsername(token));
+
+            return ResponseEntity.status(HttpStatus.OK.value()).body(response);
+        }
+        else{
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Invalid token");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(response);
+        }
+    };
+
+    @PermitAll
     @PostMapping("/auth/login")
     public ResponseEntity<?> authAndGetToken(@RequestBody LoginForm loginForm){
         Authentication authentication = authenticationManager.authenticate(
@@ -90,23 +110,4 @@ public class SecurityController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(Map.of("message", "Invalid token"));
         }
     }
-
-    @GetMapping("/auth/validate-token")
-    public ResponseEntity<?> validateToken(@RequestHeader String Authorization){
-        String token = Authorization.substring(7);
-        if(jwtUtils.isTokenValid(token)){
-            Map<String, String> response = new HashMap<>();
-
-            response.put("user_role", jwtUtils.getRole(token));
-            response.put("user_username", jwtUtils.extractUsername(token));
-
-            return ResponseEntity.status(HttpStatus.OK.value()).body(response);
-        }
-        else{
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Invalid token");
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(response);
-        }
-    };
 }

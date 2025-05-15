@@ -25,6 +25,7 @@ public class Trip {
     private String routeId;
     private String coachId;
     private String driverId;
+    private String companyId;
     private LocalDate departureDate;
     private LocalTime departureTime;
     private LocalDate arrivalDate;
