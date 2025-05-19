@@ -15,6 +15,7 @@ import com.example.auth_service.repository.httpclient.ProfileClient;
 import com.example.auth_service.service.UserService;
 import com.example.auth_service.utils.Role;
 import com.example.event.NotificationEvent;
+import com.example.event.NotificationSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -148,6 +150,14 @@ public class UserServiceImpl implements UserService {
         user.setActivation(true);
         user.setActivationCode(null);
         userRepository.save(user);
+
+        kafkaTemplate.send("send-notification", NotificationSender.builder()
+                .username(user.getUsername())
+                .title("Account Activation")
+                .message("Your account has been activated successfully!")
+                .read(false)
+                .timestamp(LocalDateTime.now())
+                .build());
     }
 
     @Override

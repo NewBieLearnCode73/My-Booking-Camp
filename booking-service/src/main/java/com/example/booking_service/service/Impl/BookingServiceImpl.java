@@ -13,22 +13,30 @@ import com.example.booking_service.repository.BookingSeatDetailRepository;
 import com.example.booking_service.repository.httpclient.TripClient;
 import com.example.booking_service.service.BookingService;
 import com.example.booking_service.utils.Status;
+import com.example.event.NotificationSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
 public class BookingServiceImpl implements BookingService {
+
+    @Autowired
+    private KafkaTemplate<String, NotificationSender> kafkaTemplate;
+
     @Autowired
     private BookingRepository bookingRepository;
 
@@ -182,6 +190,16 @@ public class BookingServiceImpl implements BookingService {
         }
 
         bookingSeatDetailRepository.saveAll(seatDetails);
+
+
+        kafkaTemplate.send("send-notification",
+                NotificationSender.builder()
+                        .username(savedBooking.getUserUsername())
+                        .title("Booking Confirmation")
+                        .message("Your booking with id " + savedBooking.getId() + " has been confirmed!")
+                        .read(false)
+                        .timestamp(LocalDateTime.now())
+                        .build());
 
         return bookingMapper.toBookingResponse(savedBooking);
     }

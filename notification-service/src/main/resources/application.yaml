@@ -32,3 +32,9 @@ eureka:
 
 
 apiKey: ${NOTIFICATION_SERVICE_API_KEY_BREVO}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui

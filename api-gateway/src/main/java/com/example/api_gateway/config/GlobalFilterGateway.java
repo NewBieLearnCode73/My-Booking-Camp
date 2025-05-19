@@ -49,6 +49,12 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
 
         String fullPath = query.isEmpty() ? path : path + "?" + query;
 
+        log.info("Fullpath: {}", fullPath);
+
+        // Đặt kiểm tra Swagger lên đầu tiên để ưu tiên
+        if (EndpointFilter.isSwaggerEndpoint(fullPath)) {
+            return chain.filter(exchange);
+        }
         if(method.equals(HttpMethod.GET.toString())) {
             if (EndpointFilter.isPublicEndpoint(fullPath)) {
                 return chain.filter(exchange);

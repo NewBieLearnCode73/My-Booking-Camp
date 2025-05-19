@@ -19,3 +19,9 @@ eureka:
 
 server:
   port: ${PAYMENT_SERVICE_SERVER_PORT}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui

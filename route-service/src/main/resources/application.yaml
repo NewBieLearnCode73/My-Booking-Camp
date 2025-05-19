@@ -21,3 +21,9 @@ spring:
 
 server:
     port: ${ROUTE_SERVICE_SERVER_PORT}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
