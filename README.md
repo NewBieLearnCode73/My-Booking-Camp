@@ -14,7 +14,7 @@
 
 ## 3. System Architecture
 **Architecture Diagram:**
-![img.png](img.png)
+![img_1.png](img_1.png)
 
 **Microservices included:**
 - **API Gateway:**  Acts as a centralized entry point for all services, routing incoming requests to the appropriate microservices while handling authentication, logging, and load balancing.
@@ -30,12 +30,12 @@
 - **Eureka Server:**  Acts as the service registry, monitoring the status of all microservices, managing service discovery, and enabling dynamic scaling and fault tolerance within the system.
 - **Notification Service:** Sends account verification messages via email by using **Brevo (Sendinblue)** to confirm user registration and provide secure verification links or codes.
 
-### 4. System Requirements
+## 4. System Requirements
 - Java 21+
 - Maven 3.8+
 - Docker
 
-### 5. How to install ?
+## 5. How to install ?
 **Step 1:** Clone this repository:
 
 ```
@@ -79,11 +79,7 @@ mvn spring-boot:run
 ```
 
 ## 6. API Documentations
-- The API documentation is automatically generated using Swagger.
-- Access the documentation at:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
+The API documentation is automatically generated using Swagger.
+Access the documentation of each service at the corresponding port
 
 
