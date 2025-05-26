@@ -32,7 +32,7 @@
 
 ## 4. System Requirements
 - Java 21+
-- Maven 3.8+
+- Gradle 8+
 - Docker
 
 ## 5. How to install ?
