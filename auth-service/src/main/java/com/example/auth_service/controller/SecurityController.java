@@ -110,4 +110,18 @@ public class SecurityController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(Map.of("message", "Invalid token"));
         }
     }
+
+//    @PermitAll
+//    @PostMapping("/auth/logout")
+//    public ResponseEntity<?> logout(@RequestHeader String Authorization) {
+//        String token = Authorization.substring(7);
+//        if (jwtUtils.isTokenValid(token)) {
+//            String username = jwtUtils.extractUsername(token);
+//            String userId = userService.getUserIdByUsername(username);
+//            myJwtRedisService.deleteJwtFromRedis(userId, token);
+//            return ResponseEntity.status(HttpStatus.OK.value()).body(Map.of("message", "Logged out successfully"));
+//        } else {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(Map.of("message", "Invalid token"));
+//        }
+//    }
 }

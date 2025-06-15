@@ -1,6 +1,7 @@
 package com.example.api_gateway.config;
 
 import com.example.api_gateway.handle.CustomRunTimeException;
+import com.example.api_gateway.service.MyRedisService;
 import com.example.api_gateway.utils.EndpointFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,9 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
 
     @Autowired
     private WebClient.Builder webClientBuilder;
+
+    @Autowired
+    private MyRedisService myRedisService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -73,7 +78,7 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
             try {
                 return onError(exchange.getResponse(), "401", "Authorization header is missing");
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new CustomRunTimeException(HttpStatus.BAD_REQUEST, "Authorization header is missing");
             }
         }
 
@@ -85,12 +90,43 @@ public class GlobalFilterGateway implements GlobalFilter, Ordered {
                 try {
                     return onError(exchange.getResponse(), "401", "Token is empty");
                 } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
+                    throw new CustomRunTimeException(HttpStatus.BAD_REQUEST, "Token is empty");
                 }
             }
         }
 
-        return webClientBuilder.build()
+        // Gọi đến redis trước để kiểm tra token, sau đó mới gọi đến auth service
+        String token = authHeader.substring(7);
+        boolean isValid = myRedisService.isJwtValid(token);
+        if (isValid) {
+
+            log.info("Token is valid, retrieving user info from Redis");
+            Map<String, String> tokenInfo = myRedisService.getTokenInfo(token);
+
+            ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+                    .header("X-Auth-Username", tokenInfo.get("username"))
+                    .header("X-Auth-Roles", tokenInfo.get("role"))
+                    .build();
+
+            ServerWebExchange finalExchange = exchange.mutate()
+                    .request(modifiedRequest)
+                    .build();
+
+
+            return chain.filter(finalExchange);
+        }
+        else if( myRedisService.isTokenBlackListed(token)) {
+            log.info("Token is blacklisted");
+            try {
+                return onError(exchange.getResponse(), "401", "Token is blacklisted");
+            } catch (JsonProcessingException e) {
+                throw new CustomRunTimeException(HttpStatus.BAD_REQUEST, "Token is blacklisted");
+            }
+        }
+
+
+        return
+                webClientBuilder.build()
                 .get()
                 .uri("http://localhost:8080/auth/validate-token")
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
