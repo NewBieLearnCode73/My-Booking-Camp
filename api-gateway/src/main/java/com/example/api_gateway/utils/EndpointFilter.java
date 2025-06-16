@@ -62,7 +62,8 @@ public class EndpointFilter {
     private static final List<Pattern> POST_PUBLIC_ENDPOINTS = Arrays.asList(
             Pattern.compile("^/auth/login$"),
             Pattern.compile("^/auth/register$"),
-            Pattern.compile("^/auth/refresh-token$")
+            Pattern.compile("^/auth/refresh-token$"),
+            Pattern.compile("^/auth/logout$")
     );
 
 

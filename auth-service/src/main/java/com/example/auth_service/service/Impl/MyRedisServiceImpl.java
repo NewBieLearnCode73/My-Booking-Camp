@@ -1,6 +1,7 @@
 package com.example.auth_service.service.Impl;
 
 import com.example.auth_service.service.MyJwtRedisService;
+import com.example.auth_service.service.UserService;
 import com.example.auth_service.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,6 +22,9 @@ public class MyRedisServiceImpl implements MyJwtRedisService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private UserService userService;
 
     private final int MAX_TOKENS = 5;
 
@@ -107,5 +111,25 @@ public class MyRedisServiceImpl implements MyJwtRedisService {
     public boolean isTokenBlackListed(String token) {
         String tokenKey = "blacklist:" + token;
         return redisTemplate.hasKey(tokenKey);
+    }
+
+    @Override
+    public void logoutAndBlacklistToken(String token) {
+        jwtUtils.isTokenValid(token);
+
+        String username = jwtUtils.extractUsername(token);
+
+        String userId = userService.getUserIdByUsername(username);
+
+        String tokenKey = "jwt_cache:" + token;
+        String tokenSortedSet = "jwt_sorted_set:" + userId;
+
+        // Xóa token khỏi cache và sorted set
+        redisTemplate.delete(tokenKey);
+        redisTemplate.opsForZSet().remove(tokenSortedSet, token);
+
+        putTokenToBlackList(token);
+
+        log.info("Token logged out and blacklisted: {}", token);
     }
 }

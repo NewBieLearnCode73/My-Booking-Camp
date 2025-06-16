@@ -13,4 +13,5 @@ public interface MyJwtRedisService {
     public Map<String, String> getTokenInfo(String token);
     public void putTokenToBlackList(String token);
     public boolean isTokenBlackListed(String token);
+    public void logoutAndBlacklistToken(String token);
 }
