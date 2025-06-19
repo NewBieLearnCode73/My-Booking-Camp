@@ -63,6 +63,16 @@ public class MyRedisServiceImpl implements MyJwtRedisService {
     }
 
     @Override
+    public void saveRefreshTokenToRedis(String refreshToken, long ttl) {
+        String tokenKey = "refresh_token_cache:" + refreshToken;
+        Map<String, String> refreshTokenInfo = new HashMap<>();
+        String username = jwtUtils.extractUsername(refreshToken);
+        refreshTokenInfo.put("username", username);
+        redisTemplate.opsForHash().putAll(tokenKey, refreshTokenInfo);
+        redisTemplate.expire(tokenKey, ttl, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
     public boolean isJwtValid(String token) {
         // Check trong record đầu tiên của redis
         String tokenKey = "jwt_cache:" + token;
@@ -131,5 +141,22 @@ public class MyRedisServiceImpl implements MyJwtRedisService {
         putTokenToBlackList(token);
 
         log.info("Token logged out and blacklisted: {}", token);
+    }
+
+    @Override
+    public void deleteRefreshToken(String token) {
+        String tokenKey = "refresh_token_cache:" + token;
+        if (redisTemplate.hasKey(tokenKey)) {
+            redisTemplate.delete(tokenKey);
+            log.info("Refresh token deleted: {}", token);
+        } else {
+            log.warn("Refresh token not found in Redis: {}", token);
+        }
+    }
+
+    @Override
+    public boolean hasRefreshToken(String token) {
+        String tokenKey = "refresh_token_cache:" + token;
+        return redisTemplate.hasKey(tokenKey);
     }
 }

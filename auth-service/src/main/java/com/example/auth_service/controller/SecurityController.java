@@ -40,11 +40,16 @@ public class SecurityController {
     @GetMapping("/auth/validate-token")
     public ResponseEntity<?> validateToken(@RequestHeader String Authorization){
         String token = Authorization.substring(7);
+
         if(jwtUtils.isTokenValid(token)){
             Map<String, String> response = new HashMap<>();
 
             response.put("user_role", jwtUtils.getRole(token));
             response.put("user_username", jwtUtils.extractUsername(token));
+
+            String userId = userService.getUserIdByUsername(jwtUtils.extractUsername(token));
+
+            myJwtRedisService.saveJwtToRedis(userId, token, jwtUtils.extractExpiration(token).getTime() - System.currentTimeMillis());
 
             return ResponseEntity.status(HttpStatus.OK.value()).body(response);
         }
@@ -77,9 +82,10 @@ public class SecurityController {
 
 
             long ttl = jwtUtils.extractExpiration(accessToken).getTime() - System.currentTimeMillis();
-
-            // Convert to milliseconds
             myJwtRedisService.saveJwtToRedis(user_id, accessToken, ttl);
+
+            long refreshTtl = jwtUtils.extractExpiration(refreshToken).getTime() - System.currentTimeMillis();
+            myJwtRedisService.saveRefreshTokenToRedis(refreshToken, refreshTtl);
 
 
             return ResponseEntity.status(HttpStatus.OK.value()).body(token);
@@ -93,22 +99,34 @@ public class SecurityController {
     @PostMapping("/auth/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> token){
         String refreshToken = token.get("refresh_token");
-        if(jwtUtils.isTokenValid(refreshToken)){
-            String username = jwtUtils.extractUsername(refreshToken);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            String newAccessToken = jwtUtils.generateToken(userDetails);
-            String newRefreshToken = jwtUtils.generateRefreshToken(userDetails);
-
-            Map<String, String> newToken = new HashMap<>();
-            newToken.put("access_token", newAccessToken);
-            newToken.put("refresh_token", newRefreshToken);
-
-            return ResponseEntity.status(HttpStatus.OK.value()).body(newToken);
+        if (!jwtUtils.isTokenValid(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Invalid token"));
         }
-        else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(Map.of("message", "Invalid token"));
+
+        boolean tokenExists = myJwtRedisService.hasRefreshToken(refreshToken);
+        if (!tokenExists) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Token not found or already used"));
         }
+
+        String username = jwtUtils.extractUsername(refreshToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        String newAccessToken = jwtUtils.generateToken(userDetails);
+        String newRefreshToken = jwtUtils.generateRefreshToken(userDetails);
+
+        myJwtRedisService.deleteRefreshToken(refreshToken);
+
+        long ttl = jwtUtils.extractExpiration(newRefreshToken).getTime() - System.currentTimeMillis();
+        myJwtRedisService.saveRefreshTokenToRedis(newRefreshToken, ttl);
+
+        Map<String, String> newToken = new HashMap<>();
+        newToken.put("access_token", newAccessToken);
+        newToken.put("refresh_token", newRefreshToken);
+
+        return ResponseEntity.status(HttpStatus.OK).body(newToken);
     }
 
     @PermitAll

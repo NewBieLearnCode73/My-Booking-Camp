@@ -30,6 +30,10 @@
 - **Eureka Server:**  Acts as the service registry, monitoring the status of all microservices, managing service discovery, and enabling dynamic scaling and fault tolerance within the system.
 - **Notification Service:** Sends account verification messages via email by using **Brevo (Sendinblue)** to confirm user registration and provide secure verification links or codes.
 
+### Authentication Process
+
+![auth.png](auth.png)
+
 ## 4. System Requirements
 - Java 21+
 - Gradle 8+
