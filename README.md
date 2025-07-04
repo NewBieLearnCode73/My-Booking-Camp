@@ -35,7 +35,7 @@
 ![auth.png](auth.png)
 
 ## 4. System Requirements
-- Java 21+
+- Java 17
 - Gradle 8+
 - Docker
 

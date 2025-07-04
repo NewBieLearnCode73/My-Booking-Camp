@@ -21,6 +21,8 @@ services:
         ports:
             - "6379:6379"
         restart: always
+        volumes:
+            - redis_data:/data
 
     kafka:
         image: apache/kafka:latest
@@ -28,9 +30,11 @@ services:
         ports:
             - "9092:9092"
         restart: always
+        volumes:
+            -  kafka_data:/var/lib/kafka/data
 
     neo4j:
-        image: neo4j:latest
+        image: neo4j:5.19.0
         container_name: my_booking_camp_neo4j
         ports:
             - "7474:7474"
@@ -38,6 +42,8 @@ services:
         environment:
             - NEO4J_AUTH=neo4j/12345678
         restart: always
+        volumes:
+            - neo4j_data:/data
 
     mongo:
         image: mongo:latest
@@ -59,5 +65,8 @@ services:
         restart: always
 
 volumes:
+    redis_data:
     mysql_db:
     mongo_data:
+    kafka_data:
+    neo4j_data:
